@@ -31,9 +31,13 @@ public partial class CCDRSContext : DbContext
     }
 
     /// <summary>
-    /// Allow pages to access the Directions Class as a service
+    /// Allow pages to access the Direction Class as a service
     /// </summary>
     public virtual DbSet<Direction> Directions { get; set; }
+    /// <summary>
+    /// Allow pages to access Region class as a service
+    /// </summary>
+    public virtual DbSet<Region> Regions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,10 +48,20 @@ public partial class CCDRSContext : DbContext
             entity.ToTable("direction");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Abbr)
+            entity.Property(e => e.Abbreviation)
                 .HasMaxLength(1)
                 .HasColumnName("abbr");
             entity.Property(e => e.Compass).HasColumnName("compass");
+        });
+
+        modelBuilder.Entity<Region>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("region_pkey");
+
+            entity.ToTable("region");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
         });
 
         OnModelCreatingPartial(modelBuilder);

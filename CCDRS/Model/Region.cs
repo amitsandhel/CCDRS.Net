@@ -15,29 +15,22 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CCDRS.Model;
+
 /// <summary>
-/// Class that maps to the direction table
+/// Class that maps to the region table
 /// </summary>
-public partial class Direction
+public partial class Region
 {
+
     /// <summary>
-    /// Id is a Primary serial key of type int
-    /// It is auto generated. 
+    /// Id is primary serial key of type int that is auto generated
     /// </summary>
     public int Id { get; set; }
 
     /// <summary>
-    /// Compass string generated of the name of directions eg North, South
+    /// Stores the name of the region, e.g. Toronto
     /// </summary>
-    public string Compass { get; set; } = String.Empty;
-
-    /// <summary>
-    /// Abbreviation string generated of the abbreviated form of each direction
-    /// Changed the attribute name from Abbr to Abbreviation
-    /// </summary>
-    [Column("Abbr")]
-    public char Abbreviation { get; set; }
+    public string Name { get; set; } = string.Empty;
 }
