@@ -64,6 +64,16 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Name).HasColumnName("name");
         });
 
+        modelBuilder.Entity<Vehicle>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("vehicle_pkey");
+
+            entity.ToTable("vehicle");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 
