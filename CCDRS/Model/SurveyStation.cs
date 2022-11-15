@@ -19,9 +19,9 @@ using System.Collections.Generic;
 namespace CCDRS.Model;
 
 /// <summary>
-/// Class that maps to the survey table
+/// Class that maps to the survey_station table
 /// </summary>
-public partial class Survey
+public partial class SurveyStation
 {
     /// <summary>
     /// Primary serial key of type int that is auto generated
@@ -29,22 +29,22 @@ public partial class Survey
     public int Id { get; set; }
 
     /// <summary>
-    /// The year which the survey was conducted in e.g. 2016. 
+    /// Foreign key to the station table associated to the station primary key attribute
     /// </summary>
-    public int Year { get; set; }
+    public int StationId { get; set; }
 
     /// <summary>
-    /// Foreign key to the region table associated to the region primary key attribute
+    /// Foreign key to the survey table associated to the survey primary key attribute
     /// </summary>
-    public int RegionId { get; set; }
+    public int SurveyId { get; set; }
 
     /// <summary>
-    /// Modify Region Method since survey has a foreign key to region table. 
+    /// Modify Station class since survey_station has a foreign key to station table.
     /// </summary>
-    public virtual Region Region { get; set; } = null!;
+    public virtual Station Station { get; set; } = null!;
 
     /// <summary>
-    /// Collection of survey_stations associated with survey
+    /// Modify Survey class since survey_station has a foreign key to survey table.
     /// </summary>
-    public virtual ICollection<SurveyStation> SurveyStations { get; } = new List<SurveyStation>();
+    public virtual Survey Survey { get; set; } = null!;
 }

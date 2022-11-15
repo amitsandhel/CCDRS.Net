@@ -65,6 +65,11 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<Screenline> Screenlines { get; set; }
 
+    /// <summary>
+    /// Allow pages to access SurveyStation class as a service.
+    /// </summary>
+    public virtual DbSet<SurveyStation> SurveyStations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Association of Direction class to direction database attributes
@@ -183,6 +188,30 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.RegionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("screenline_region_id_fkey");
+        });
+
+        //Assocaition of SurveyStation to survey_station database attributes
+        modelBuilder.Entity<SurveyStation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("survey_station_pkey");
+
+            entity.ToTable("survey_station");
+
+            entity.HasIndex(e => new { e.StationId, e.SurveyId }, "survey_station_station_id_survey_id_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.StationId).HasColumnName("station_id");
+            entity.Property(e => e.SurveyId).HasColumnName("survey_id");
+
+            entity.HasOne(d => d.Station).WithMany(p => p.SurveyStations)
+                .HasForeignKey(d => d.StationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("survey_station_station_id_fkey");
+
+            entity.HasOne(d => d.Survey).WithMany(p => p.SurveyStations)
+                .HasForeignKey(d => d.SurveyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("survey_station_survey_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

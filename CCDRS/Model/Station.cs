@@ -57,4 +57,9 @@ public partial class Station
     /// Modify Region class since station has a foreign key to region table.
     /// </summary>
     public virtual Region Region { get; set; } = null!;
+
+    /// <summary>
+    /// Collection of survey_station associated with stations
+    /// </summary>
+    public virtual ICollection<SurveyStation> SurveyStations { get; } = new List<SurveyStation>();
 }
