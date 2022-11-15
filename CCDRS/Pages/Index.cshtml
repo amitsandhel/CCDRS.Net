@@ -4,7 +4,64 @@
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
+@*<div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+</div>*@
+
+<body>
+    <div>
+        <h3>Please Select A Region and Year</h3>
+        <p>Note you can only select one year and region at a time</p>
+    </div>
+    <form method="post">
+        <div>
+            @foreach (var regionId in Model.RegionList)
+            {
+                <input id="@regionId" type="radio" name="regionId" asp-for="regionId" value="@regionId.Id" />
+                <label for="@regionId.Id">@regionId.Name</label>
+            }
+            <br />
+        </div>
+        <h4>Year</h4>
+        <select asp-for="DdlYear"></select>
+
+        <div>
+            <h4>Extract Data For:</h4>
+            <input type="submit" class="btn btn-primary" value="All Station" asp-page-handler="AllStation" />
+            <input type="submit" class="btn btn-primary" value="All Screenlines" asp-page-handler="AllScreenlines" />
+            <input type="submit" class="btn btn-primary" value="Specific Station" asp-page-handler="SpecificStation" />
+            <input type="submit" class="btn btn-primary" value="Specific Screenlines" asp-page-handler="SpecificScreenline" />
+
+        </div>
+    </form>
+
+    <div>
+        <h3>Info:</h3>
+        <a href='http://dmg.utoronto.ca/pdf/ccdrs/ccdrs_manual.pdf' a().icon.icon-download>User Manual</a>
+        <br />
+        <a href='http://dmg.utoronto.ca/pdf/ccdrs/app_files/corcnt.pdf'>Detailed description of database</a>
+        <br />
+        <a href='location_desc'>Screenlines and Station map</a>
+    </div>
+</body>
+
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('input[name="regionId"]').on("change", function (e) {
+                var regionId = $(this).val();
+                $("#DdlYear").empty();
+                console.log(" selected ddl value ", regionId);
+                $.getJSON('?handler=RegionId&regionId='+regionId, (data) => {
+                    $.each(data, function (i, item) {
+                        console.log('i ', i);
+                        console.log('item ', item, item.id, item.year);
+                        $("#DdlYear").append(`<option value="${item.id}">${item.year}</option>`);
+                    });
+                });
+            });
+        });
+    </script>
+    }

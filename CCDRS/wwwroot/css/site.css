@@ -1,22 +1,30 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
+    overflow-y: scroll;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    line-height: 1.5;
+    color: white;
+    background-color: #252830;
+}
+
+
+.btn-primary {
+    background-color: #1ca8dd;
+    color: white;
 }

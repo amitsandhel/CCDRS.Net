@@ -1,7 +1,17 @@
+using CCDRS.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+// Add our database contexts to PostgreSql
+builder.Services.AddDbContext<CCDRSContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("TestDBContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
+
+
+
+
 
 var app = builder.Build();
 
