@@ -60,6 +60,11 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<Station> Stations { get; set; }
 
+    /// <summary>
+    /// Allow pages to access Screenline class as a service.
+    /// </summary>
+    public virtual DbSet<Screenline> Screenlines { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Association of Direction class to direction database attributes
@@ -76,7 +81,7 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Compass).HasColumnName("compass");
         });
 
-        //Association of Region class to region database attributes
+        // Association of Region class to region database attributes
         modelBuilder.Entity<Region>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("region_pkey");
@@ -87,7 +92,7 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Name).HasColumnName("name");
         });
 
-        //Association of Survey class to survey database attributes
+        // Association of Survey class to survey database attributes
         modelBuilder.Entity<Survey>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("survey_pkey");
@@ -104,7 +109,7 @@ public partial class CCDRSContext : DbContext
                 .HasConstraintName("survey_region_id_fkey");
         });
 
-        //Association of Vehicle class to vehicle database attributes.
+        // Association of Vehicle class to vehicle database attributes.
         modelBuilder.Entity<Vehicle>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("vehicle_pkey");
@@ -115,7 +120,7 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Name).HasColumnName("name");
         });
 
-        //Association of VehicleCountType class to vehicle_count_type database attributes.
+        // Association of VehicleCountType class to vehicle_count_type database attributes.
         modelBuilder.Entity<VehicleCountType>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("vehicle_count_type_pkey");
@@ -136,7 +141,7 @@ public partial class CCDRSContext : DbContext
                 .HasConstraintName("vehicle_count_type_vehicle_id_fkey");
         });
 
-        //Association of Station class to station database attributes.
+        // Association of Station class to station database attributes.
         modelBuilder.Entity<Station>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("station_pkey");
@@ -158,6 +163,26 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.RegionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("station_region_id_fkey");
+        });
+
+        // Association of Screenline class to screenline database attributes.
+        modelBuilder.Entity<Screenline>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("screenline_pkey");
+
+            entity.ToTable("screenline");
+
+            entity.HasIndex(e => new { e.RegionId, e.SlineCode }, "screenline_region_id_sline_code_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.RegionId).HasColumnName("region_id");
+            entity.Property(e => e.SlineCode).HasColumnName("sline_code");
+
+            entity.HasOne(d => d.Region).WithMany(p => p.Screenlines)
+                .HasForeignKey(d => d.RegionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("screenline_region_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

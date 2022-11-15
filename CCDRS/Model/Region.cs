@@ -42,4 +42,9 @@ public partial class Region
     /// Collection of stations associated with the region.
     /// </summary>
     public virtual ICollection<Station> Stations { get; } = new List<Station>();
+
+    /// <summary>
+    /// Collection of screenlines associated with a region.
+    /// </summary>
+    public virtual ICollection<Screenline> Screenlines { get; } = new List<Screenline>();
 }

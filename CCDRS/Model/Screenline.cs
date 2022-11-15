@@ -42,4 +42,9 @@ public partial class Screenline
     /// Description of the screenline
     /// </summary>
     public string Note { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Modify Region Class since screenline has a foreign key to region table. 
+    /// </summary>
+    public virtual Region Region { get; set; } = null!;
 }
