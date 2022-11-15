@@ -52,4 +52,9 @@ public partial class Station
     /// Description of station describing main intersection and road.
     /// </summary>
     public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Modify Region class since station has a foreign key to region table.
+    /// </summary>
+    public virtual Region Region { get; set; } = null!;
 }

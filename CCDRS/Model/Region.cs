@@ -37,4 +37,9 @@ public partial class Region
     /// Collection of surveys associated with the region.
     /// </summary>
     public virtual ICollection<Survey> Surveys { get; } = new List<Survey>();
+
+    /// <summary>
+    /// Collection of stations associated with the region.
+    /// </summary>
+    public virtual ICollection<Station> Stations { get; } = new List<Station>();
 }

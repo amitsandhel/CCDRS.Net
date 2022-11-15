@@ -55,6 +55,11 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<VehicleCountType> VehicleCountTypes { get; set; }
 
+    /// <summary>
+    /// Allow pages to access Station class as a service.
+    /// </summary>
+    public virtual DbSet<Station> Stations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Association of Direction class to direction database attributes
@@ -129,6 +134,30 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.VehicleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("vehicle_count_type_vehicle_id_fkey");
+        });
+
+        //Association of Station class to station database attributes.
+        modelBuilder.Entity<Station>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("station_pkey");
+
+            entity.ToTable("station");
+
+            entity.HasIndex(e => new { e.RegionId, e.StationCode }, "station_region_id_station_code_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Direction)
+                .HasMaxLength(1)
+                .HasColumnName("direction");
+            entity.Property(e => e.RegionId).HasColumnName("region_id");
+            entity.Property(e => e.StationCode).HasColumnName("station_code");
+            entity.Property(e => e.StationNum).HasColumnName("station_num");
+
+            entity.HasOne(d => d.Region).WithMany(p => p.Stations)
+                .HasForeignKey(d => d.RegionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("station_region_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);
