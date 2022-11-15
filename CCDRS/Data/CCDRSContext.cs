@@ -45,6 +45,10 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<VehicleCountType> VehicleCountTypes { get; set; }
 
+    /// <summary>
+    /// Allow pages to access survey class as a service.
+    /// </summary>
+    public virtual DbSet<Survey> Surveys { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -97,6 +101,16 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.VehicleId).HasColumnName("vehicle_id");
         });
 
+        modelBuilder.Entity<Survey>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("survey_pkey");
+
+            entity.ToTable("survey");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.RegionId).HasColumnName("region_id");
+            entity.Property(e => e.Year).HasColumnName("year");
+        });
         OnModelCreatingPartial(modelBuilder);
     }
 
