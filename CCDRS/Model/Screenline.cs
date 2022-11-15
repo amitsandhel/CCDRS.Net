@@ -47,4 +47,9 @@ public partial class Screenline
     /// Modify Region Class since screenline has a foreign key to region table. 
     /// </summary>
     public virtual Region Region { get; set; } = null!;
+
+    /// <summary>
+    /// Collection of list of stations associated with a screenline.
+    /// </summary>
+    public virtual ICollection<Station> Stations { get; } = new List<Station>();
 }

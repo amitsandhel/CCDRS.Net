@@ -62,4 +62,9 @@ public partial class Station
     /// Collection of survey_station associated with stations
     /// </summary>
     public virtual ICollection<SurveyStation> SurveyStations { get; } = new List<SurveyStation>();
+
+    /// <summary>
+    /// Collection of list of screenlines associated with a station 
+    /// </summary>
+    public virtual ICollection<Screenline> Screenlines { get; } = new List<Screenline>();
 }

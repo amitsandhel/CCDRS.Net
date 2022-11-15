@@ -193,6 +193,23 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.RegionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("screenline_region_id_fkey");
+
+            entity.HasMany(d => d.Stations).WithMany(p => p.Screenlines)
+                .UsingEntity<Dictionary<string, object>>(
+                    "ScreenlineStation",
+                    r => r.HasOne<Station>().WithMany()
+                        .HasForeignKey("StationId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("screenline_station_station_id_fkey"),
+                    l => l.HasOne<Screenline>().WithMany()
+                        .HasForeignKey("ScreenlineId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("screenline_station_screenline_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("ScreenlineId", "StationId").HasName("screenline_station_pkey");
+                        j.ToTable("screenline_station");
+                    });
         });
 
         // Association of SurveyStation to survey_station database attributes
