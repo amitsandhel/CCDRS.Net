@@ -50,6 +50,10 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<Survey> Surveys { get; set; }
 
+    /// <summary>
+    /// Allow pages to access station class as a service.
+    /// </summary>
+    public virtual DbSet<Station> Stations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -111,6 +115,25 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.RegionId).HasColumnName("region_id");
             entity.Property(e => e.Year).HasColumnName("year");
         });
+
+        modelBuilder.Entity<Station>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("station_pkey");
+
+            entity.ToTable("station");
+
+            entity.HasIndex(e => new { e.RegionId, e.StationCode }, "station_region_id_station_code_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Direction)
+                .HasMaxLength(1)
+                .HasColumnName("direction");
+            entity.Property(e => e.RegionId).HasColumnName("region_id");
+            entity.Property(e => e.StationCode).HasColumnName("station_code");
+            entity.Property(e => e.StationNum).HasColumnName("station_num");
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 
