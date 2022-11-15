@@ -18,38 +18,35 @@ using System.Collections.Generic;
 
 namespace CCDRS.Model;
 
-/// <summary>
-/// Class that maps to the survey_station table
-/// </summary>
-public partial class SurveyStation
+public partial class StationCountObservation
 {
     /// <summary>
-    /// Primary serial key of type int that is auto generated
+    /// Foreign key to the survey_station table associated to the survey_station primary key attribute.
     /// </summary>
-    public int Id { get; set; }
+    public int SurveyStationId { get; set; }
 
     /// <summary>
-    /// Foreign key to the station table associated to the station primary key attribute
+    /// Foreign key to the vehicle_count_type table associated to the vehicle_count_type primary key attribute.
     /// </summary>
-    public int StationId { get; set; }
+    public int VehicleCountTypeId { get; set; }
 
     /// <summary>
-    /// Foreign key to the survey table associated to the survey primary key attribute
+    /// The results of the number of vehicles observed. 
     /// </summary>
-    public int SurveyId { get; set; }
+    public int Observation { get; set; }
 
     /// <summary>
-    /// Modify Station class since survey_station has a foreign key to station table.
+    /// Time measured in minutes. e.g. 600
     /// </summary>
-    public virtual Station Station { get; set; } = null!;
+    public int Time { get; set; }
 
     /// <summary>
-    /// Modify Survey class since survey_station has a foreign key to survey table.
+    /// Modify SurveyStation Class since SurveyStation has a foreign key to survey_station table.
     /// </summary>
-    public virtual Survey Survey { get; set; } = null!;
+    public virtual SurveyStation SurveyStation { get; set; } = null!;
 
     /// <summary>
-    /// Modify StationCountObservation class since survey_station has a foreign key to station_count_observation table.
+    /// Modify VehicleCountType class since VehicleCountType has a foreign key to vehicle_count_type table.
     /// </summary>
-    public virtual ICollection<StationCountObservation> StationCountObservations { get; } = new List<StationCountObservation>();
+    public virtual VehicleCountType VehicleCountType { get; set; } = null!;
 }

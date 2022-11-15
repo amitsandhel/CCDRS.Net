@@ -49,4 +49,9 @@ public partial class VehicleCountType
     /// Modify Vehicle class since vehicle_count_type has a foreign key to vehicle table.
     /// </summary>
     public virtual Vehicle Vehicle { get; set; } = null!;
+
+    /// <summary>
+    /// Modify StationCountObservation class since station_count_observation has a foreign key to vehicle_count_type table.
+    /// </summary>
+    public virtual ICollection<StationCountObservation> StationCountObservations { get; } = new List<StationCountObservation>();
 }

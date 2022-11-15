@@ -70,6 +70,11 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<SurveyStation> SurveyStations { get; set; }
 
+    /// <summary>
+    /// Allow pages to access StationCountObservation as a service.
+    /// </summary>
+    public virtual DbSet<StationCountObservation> StationCountObservations { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Association of Direction class to direction database attributes
@@ -190,7 +195,7 @@ public partial class CCDRSContext : DbContext
                 .HasConstraintName("screenline_region_id_fkey");
         });
 
-        //Assocaition of SurveyStation to survey_station database attributes
+        // Association of SurveyStation to survey_station database attributes
         modelBuilder.Entity<SurveyStation>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("survey_station_pkey");
@@ -212,6 +217,29 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.SurveyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("survey_station_survey_id_fkey");
+        });
+
+        // Association of StationCountObservation to station_count_observation attributes.
+        modelBuilder.Entity<StationCountObservation>(entity =>
+        {
+            entity.HasKey(e => new { e.Time, e.SurveyStationId, e.VehicleCountTypeId }).HasName("station_count_observation_pkey");
+
+            entity.ToTable("station_count_observation");
+
+            entity.Property(e => e.Time).HasColumnName("time");
+            entity.Property(e => e.SurveyStationId).HasColumnName("survey_station_id");
+            entity.Property(e => e.VehicleCountTypeId).HasColumnName("vehicle_count_type_id");
+            entity.Property(e => e.Observation).HasColumnName("observation");
+
+            entity.HasOne(d => d.SurveyStation).WithMany(p => p.StationCountObservations)
+                .HasForeignKey(d => d.SurveyStationId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("station_count_observation_survey_station_id_fkey");
+
+            entity.HasOne(d => d.VehicleCountType).WithMany(p => p.StationCountObservations)
+                .HasForeignKey(d => d.VehicleCountTypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("station_count_observation_vehicle_count_type_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);
