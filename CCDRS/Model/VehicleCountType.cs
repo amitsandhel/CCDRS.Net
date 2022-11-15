@@ -19,9 +19,9 @@ using System.Collections.Generic;
 namespace CCDRS.Model;
 
 /// <summary>
-/// Class that maps to the direction table
+/// Class that maps to the vehicle_count_type table
 /// </summary>
-public partial class Direction
+public partial class VehicleCountType
 {
     /// <summary>
     /// Primary serial key of type int that is auto generated
@@ -29,12 +29,22 @@ public partial class Direction
     public int Id { get; set; }
 
     /// <summary>
-    /// Compass string generated of the name of directions eg North
+    /// Stores the number of passengers that can be occupied by a vehicle type
     /// </summary>
-    public string Compass { get; set; } = string.Empty;
+    public int Occupancy { get; set; }
 
     /// <summary>
-    /// Abbreviated name of each direction e.g. N, S
+    /// Foreign key to the vehicle table connected to the vehicle primary key 
     /// </summary>
-    public char Abbreviation { get; set; }
+    public int VehicleId { get; set; }
+
+    /// <summary>
+    /// Human readable description of the vehicle.
+    /// </summary>
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Stores the type of vehicle. Used to determine drop down options
+    /// </summary>
+    public int CountType { get; set; }
 }
