@@ -55,6 +55,11 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<Station> Stations { get; set; }
 
+    /// <summary>
+    /// Allow pages to access screenline class as a service.
+    /// </summary>
+    public virtual DbSet<Screenline> Screenlines { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Direction>(entity =>
@@ -133,6 +138,21 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.StationCode).HasColumnName("station_code");
             entity.Property(e => e.StationNum).HasColumnName("station_num");
         });
+
+        modelBuilder.Entity<Screenline>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("screenline_pkey");
+
+            entity.ToTable("screenline");
+
+            entity.HasIndex(e => new { e.RegionId, e.SlineCode }, "screenline_region_id_sline_code_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.RegionId).HasColumnName("region_id");
+            entity.Property(e => e.SlineCode).HasColumnName("sline_code");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }
