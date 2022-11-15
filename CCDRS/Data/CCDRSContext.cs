@@ -45,11 +45,19 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<Survey> Surveys { get; set; }
 
+    /// <summary>
+    /// Allow pages to access Vehicle class as a service.
+    /// </summary>
+    public virtual DbSet<Vehicle> Vehicles { get; set; }
+
+    /// <summary>
+    /// Allow pages to access VehicleCountType class as a service.
+    /// </summary>
+    public virtual DbSet<VehicleCountType> VehicleCountTypes { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        ///<summary>
-        ///Association of Direction class to direction database attributes
-        /// </summary>
+        // Association of Direction class to direction database attributes
         modelBuilder.Entity<Direction>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("direction_pkey");
@@ -63,9 +71,7 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Compass).HasColumnName("compass");
         });
 
-        ///<summary>
-        ///Association of Region class to region database attributes
-        /// </summary>
+        //Association of Region class to region database attributes
         modelBuilder.Entity<Region>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("region_pkey");
@@ -76,9 +82,7 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Name).HasColumnName("name");
         });
 
-        ///<summary>
-        ///Association of Survey class to survey database attributes
-        /// </summary>
+        //Association of Survey class to survey database attributes
         modelBuilder.Entity<Survey>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("survey_pkey");
@@ -93,6 +97,38 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.RegionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("survey_region_id_fkey");
+        });
+
+        //Association of Vehicle class to vehicle database attributes.
+        modelBuilder.Entity<Vehicle>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("vehicle_pkey");
+
+            entity.ToTable("vehicle");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name).HasColumnName("name");
+        });
+
+        //Association of VehicleCountType class to vehicle_count_type database attributes.
+        modelBuilder.Entity<VehicleCountType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("vehicle_count_type_pkey");
+
+            entity.ToTable("vehicle_count_type");
+
+            entity.HasIndex(e => new { e.VehicleId, e.Occupancy }, "vehicle_count_type_vehicle_id_occupancy_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CountType).HasColumnName("count_type");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Occupancy).HasColumnName("occupancy");
+            entity.Property(e => e.VehicleId).HasColumnName("vehicle_id");
+
+            entity.HasOne(d => d.Vehicle).WithMany(p => p.VehicleCountTypes)
+                .HasForeignKey(d => d.VehicleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("vehicle_count_type_vehicle_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

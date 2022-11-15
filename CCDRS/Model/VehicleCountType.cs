@@ -18,9 +18,6 @@ using System.Collections.Generic;
 
 namespace CCDRS.Model;
 
-/// <summary>
-/// Class that maps to the vehicle_count_type table
-/// </summary>
 public partial class VehicleCountType
 {
     /// <summary>
@@ -29,17 +26,17 @@ public partial class VehicleCountType
     public int Id { get; set; }
 
     /// <summary>
-    /// Stores the number of passengers that can be occupied by a vehicle type
+    /// Number of occupants that can sit in a vehicle. 
     /// </summary>
     public int Occupancy { get; set; }
 
     /// <summary>
-    /// Foreign key to the vehicle table connected to the vehicle primary key 
+    /// Foreign key to the vehicle table associated to the vehicle primary key attribute
     /// </summary>
     public int VehicleId { get; set; }
 
     /// <summary>
-    /// Human readable description of the vehicle.
+    /// Human readable description of the vehicle describing the name of the vehicle and number of occupants e.g. Auto1.
     /// </summary>
     public string Description { get; set; } = string.Empty;
 
@@ -47,4 +44,9 @@ public partial class VehicleCountType
     /// Stores the type of vehicle. Used to determine drop down options
     /// </summary>
     public int CountType { get; set; }
+
+    /// <summary>
+    /// Modify Vehicle class since vehicle_count_type has a foreign key to vehicle table.
+    /// </summary>
+    public virtual Vehicle Vehicle { get; set; } = null!;
 }
