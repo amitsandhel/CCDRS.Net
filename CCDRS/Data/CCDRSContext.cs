@@ -41,32 +41,15 @@ public partial class CCDRSContext : DbContext
     public virtual DbSet<Region> Regions { get; set; }
 
     /// <summary>
-    /// Allow pages to access VehicleCountType class as a service.
-    /// </summary>
-    public virtual DbSet<VehicleCountType> VehicleCountTypes { get; set; }
-
-    /// <summary>
     /// Allow pages to access survey class as a service.
     /// </summary>
     public virtual DbSet<Survey> Surveys { get; set; }
 
-    /// <summary>
-    /// Allow pages to access station class as a service.
-    /// </summary>
-    public virtual DbSet<Station> Stations { get; set; }
-
-    /// <summary>
-    /// Allow pages to access screenline class as a service.
-    /// </summary>
-    public virtual DbSet<Screenline> Screenlines { get; set; }
-
-    /// <summary>
-    /// Allow pages to access ScreenlineStation class as a service.
-    /// </summary>
-    public virtual DbSet<ScreenlineStation> ScreenlineStations { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        ///<summary>
+        ///Association of Direction class to direction database attributes
+        /// </summary>
         modelBuilder.Entity<Direction>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("direction_pkey");
@@ -80,6 +63,9 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Compass).HasColumnName("compass");
         });
 
+        ///<summary>
+        ///Association of Region class to region database attributes
+        /// </summary>
         modelBuilder.Entity<Region>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("region_pkey");
@@ -90,31 +76,9 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Name).HasColumnName("name");
         });
 
-        modelBuilder.Entity<Vehicle>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("vehicle_pkey");
-
-            entity.ToTable("vehicle");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Name).HasColumnName("name");
-        });
-
-        modelBuilder.Entity<VehicleCountType>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("vehicle_count_type_pkey");
-
-            entity.ToTable("vehicle_count_type");
-
-            entity.HasIndex(e => new { e.VehicleId, e.Occupancy }, "vehicle_count_type_vehicle_id_occupancy_key").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CountType).HasColumnName("count_type");
-            entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Occupancy).HasColumnName("occupancy");
-            entity.Property(e => e.VehicleId).HasColumnName("vehicle_id");
-        });
-
+        ///<summary>
+        ///Association of Survey class to survey database attributes
+        /// </summary>
         modelBuilder.Entity<Survey>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("survey_pkey");
@@ -124,52 +88,12 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.RegionId).HasColumnName("region_id");
             entity.Property(e => e.Year).HasColumnName("year");
+
+            entity.HasOne(d => d.Region).WithMany(p => p.Surveys)
+                .HasForeignKey(d => d.RegionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("survey_region_id_fkey");
         });
-
-        modelBuilder.Entity<Station>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("station_pkey");
-
-            entity.ToTable("station");
-
-            entity.HasIndex(e => new { e.RegionId, e.StationCode }, "station_region_id_station_code_key").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Direction)
-                .HasMaxLength(1)
-                .HasColumnName("direction");
-            entity.Property(e => e.RegionId).HasColumnName("region_id");
-            entity.Property(e => e.StationCode).HasColumnName("station_code");
-            entity.Property(e => e.StationNum).HasColumnName("station_num");
-        });
-
-        modelBuilder.Entity<Screenline>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("screenline_pkey");
-
-            entity.ToTable("screenline");
-
-            entity.HasIndex(e => new { e.RegionId, e.SlineCode }, "screenline_region_id_sline_code_key").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Note).HasColumnName("note");
-            entity.Property(e => e.RegionId).HasColumnName("region_id");
-            entity.Property(e => e.SlineCode).HasColumnName("sline_code");
-        });
-
-        modelBuilder.Entity<ScreenlineStation>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("screenline_station");
-
-            entity.HasIndex(e => new { e.ScreenlineId, e.StationId }, "screenline_station_screenline_id_station_id_key").IsUnique();
-
-            entity.Property(e => e.ScreenlineId).HasColumnName("screenline_id");
-            entity.Property(e => e.StationId).HasColumnName("station_id");
-        });
-
 
         OnModelCreatingPartial(modelBuilder);
     }

@@ -23,9 +23,8 @@ namespace CCDRS.Model;
 /// </summary>
 public partial class Region
 {
-
     /// <summary>
-    /// Id is primary serial key of type int that is auto generated
+    /// Primary serial key of type int that is auto generated
     /// </summary>
     public int Id { get; set; }
 
@@ -33,4 +32,9 @@ public partial class Region
     /// Stores the name of the region, e.g. Toronto
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Collection of surveys associated with the region.
+    /// </summary>
+    public virtual ICollection<Survey> Surveys { get; } = new List<Survey>();
 }

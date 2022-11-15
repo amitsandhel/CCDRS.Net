@@ -24,7 +24,7 @@ namespace CCDRS.Model;
 public partial class Survey
 {
     /// <summary>
-    /// Id is primary serial key of type int that is auto generated.
+    /// Primary serial key of type int that is auto generated
     /// </summary>
     public int Id { get; set; }
 
@@ -37,4 +37,9 @@ public partial class Survey
     /// Foreign key to the region table associated to the region primary key attribute
     /// </summary>
     public int RegionId { get; set; }
+
+    /// <summary>
+    /// Modify Region Method since survey has a foreign key to region table. 
+    /// </summary>
+    public virtual Region Region { get; set; } = null!;
 }
