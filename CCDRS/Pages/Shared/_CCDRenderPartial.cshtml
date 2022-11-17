@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>@ViewBag.Title</title>
+    </head>
+
+    <body>
+        <h4> Directions </h4>
+        @foreach (var item in Model.DirectionList)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="directionCountSelect" value="@item.Abbreviation" id="@item.Id">
+                <label class="form-check-label" for="@item.Id">
+                    @item.Compass
+                </label>
+            </div>
+        }
+
+        <h4> Time Coverage </h4>
+        <label>Start Time</label>
+        <input type="number" min="500" name="startTime">
+        <br />
+        <label>End Time</label>
+        <input type="number" max="2400" name="endTime">
+        <br />
+
+        <h4>Report Traffic Volume by</h4>
+        <input type="radio" name="trafficVolumeRadioButtonSelect" value="1" />Total Volume
+        <br />
+        <input type="radio" name="trafficVolumeRadioButtonSelect" value="2" />15 minute interval
+        <br />
+
+        <h4> Vehicle Count </h4>
+        @foreach (var item in Model.VehicleCountTypeList)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="individualCategorySelect" value=@item.VehicleCountTypeId id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    @item.Description - @item.VehicleName
+                </label>
+            </div>
+        }
+
+        <h4> Person Count</h4>
+        @foreach (var item in Model.PersonCountTypeList)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="individualCategorySelect" value=@item.VehicleCountTypeId id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    @item.Description - @item.VehicleName
+                </label>
+            </div>
+        }
+
+        <h3> Individual Categories </h3>
+        @foreach (var item in Model.IndividualCategoriesList)
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="individualCategorySelect" value=@item.VehicleCountTypeId id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    @item.Description
+                </label>
+            </div>
+        }
+        <input type="submit" value="Submit" asp-page-handler="Submit" />
+
+    </body>
+</html>

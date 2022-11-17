@@ -1,4 +1,19 @@
-﻿using CCDRS.Model;
+﻿/*
+    Copyright 2022 University of Toronto
+    This file is part of CCDRS.
+    CCDRS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    CCDRS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+using CCDRS.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -51,7 +66,7 @@ namespace CCDRS.Pages
 
         //writeable property to store the year of the selected region.
         [BindProperty(SupportsGet = true)]
-        public int DdlYear { get; set; }
+        public int SelectedSurveyId { get; set; }
 
         // run database to return the list of surveys specifically the years associated 
         //with a given region. 
@@ -66,25 +81,25 @@ namespace CCDRS.Pages
         // redirect to the AllStation page
         public IActionResult OnPostAllStation()
         {
-            return RedirectToPage("AllStation", new { DdlYear, regionId });
+            return RedirectToPage("AllStation", new { SelectedSurveyId, regionId });
         }
 
         // redirect to the AllScreenline page
         public IActionResult OnPostAllScreenlines()
         {
-            return RedirectToPage("AllScreenlines", new { DdlYear, regionId });
+            return RedirectToPage("AllScreenlines", new { SelectedSurveyId, regionId });
         }
 
         // redirect to the Specific Station page
         public IActionResult OnPostSpecificStation()
         {
-            return RedirectToPage("SpecificStation", new { DdlYear, regionId });
+            return RedirectToPage("SpecificStation", new { SelectedSurveyId, regionId });
         }
 
         // redirect to the specific screenline page
         public IActionResult OnPostSpecificScreenline()
         {
-            return RedirectToPage("SpecificScreenline", new { DdlYear, regionId });
+            return RedirectToPage("SpecificScreenline", new { SelectedSurveyId, regionId });
         }
     }
 }

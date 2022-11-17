@@ -1,0 +1,19 @@
+﻿@page
+@model CCDRS.Pages.SpecificStationModel
+@{
+}
+
+<body>
+    <h1>Specific Stations for @ViewData["RegionName"] @ViewData["SelectedSurveyId"] </h1>
+    <form method="post">
+         <div>
+            <select name="DdlStationId"  asp-items="Model.StationsSelectList"></select>
+         </div>
+
+        <partial name="/Pages/Shared/_CCDRenderPartial.cshtml" />
+
+        <input type="hidden" id="regionId" name="regionId" asp-for="RegionId"/>
+        <input type="hidden" id="SelectedSurveyId" name="SelectedSurveyId" asp-for="SelectedSurveyId" />
+    </form>
+
+</body>

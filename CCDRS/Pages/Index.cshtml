@@ -24,7 +24,7 @@
             <br />
         </div>
         <h4>Year</h4>
-        <select asp-for="DdlYear"></select>
+        <select asp-for="SelectedSurveyId"></select>
 
         <div>
             <h4>Extract Data For:</h4>
@@ -52,13 +52,10 @@
         $(function () {
             $('input[name="regionId"]').on("change", function (e) {
                 var regionId = $(this).val();
-                $("#DdlYear").empty();
-                console.log(" selected ddl value ", regionId);
-                $.getJSON('?handler=RegionId&regionId='+regionId, (data) => {
+                $("#SelectedSurveyId").empty();
+                $.getJSON('?handler=RegionId&regionId=' + regionId, (data) => {
                     $.each(data, function (i, item) {
-                        console.log('i ', i);
-                        console.log('item ', item, item.id, item.year);
-                        $("#DdlYear").append(`<option value="${item.id}">${item.year}</option>`);
+                        $("#SelectedSurveyId").append(`<option value="${item.id}">${item.year}</option>`);
                     });
                 });
             });

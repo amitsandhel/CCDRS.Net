@@ -17,6 +17,8 @@ using System;
 using System.Collections.Generic;
 using CCDRS.Model;
 using Microsoft.EntityFrameworkCore;
+using CCDRS.Model;
+
 namespace CCDRS.Data;
 
 public partial class CCDRSContext : DbContext
@@ -74,6 +76,11 @@ public partial class CCDRSContext : DbContext
     /// Allow pages to access StationCountObservation as a service.
     /// </summary>
     public virtual DbSet<StationCountObservation> StationCountObservations { get; set; }
+
+    /// <summary>
+    /// Allow pages to access the individualCategory view
+    /// </summary>
+    public virtual DbSet<IndividualCategory> IndividualCategories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -257,6 +264,25 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.VehicleCountTypeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("station_count_observation_vehicle_count_type_id_fkey");
+        });
+
+        // Association of IndividualCategoryvie to individual_categories attributes.
+        modelBuilder.Entity<IndividualCategory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("individual_categories_pkey");
+
+            entity.ToTable("individual_categories");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CountType).HasColumnName("count_type");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Occupancy).HasColumnName("occupancy");
+            entity.Property(e => e.RegionId).HasColumnName("region_id");
+            entity.Property(e => e.RegionName).HasColumnName("region_name");
+            entity.Property(e => e.SurveyId).HasColumnName("survey_id");
+            entity.Property(e => e.VehicleCountTypeId).HasColumnName("vehicle_count_type_id");
+            entity.Property(e => e.VehicleName).HasColumnName("vehicle_name");
+            entity.Property(e => e.Year).HasColumnName("year");
         });
 
         OnModelCreatingPartial(modelBuilder);
