@@ -1,0 +1,17 @@
+﻿@page
+@model CCDRS.Pages.SpecificScreenlineModel
+@{
+}
+<body>
+    <h1>Specific Screenline for @ViewData["RegionName"] @ViewData["SelectedSurveyId"] </h1>
+    <form method="post">
+         <div>
+            <select name="SelectedScreenlineId"  asp-items="Model.SelectedScreenlines"></select>
+         </div>
+
+        <partial name="/Pages/Shared/_CCDRenderPartial.cshtml" />
+
+        <input type="hidden" id="regionId" name="regionId" asp-for="RegionId"/>
+        <input type="hidden" id="SelectedSurveyId" name="SelectedSurveyId" asp-for="SelectedSurveyId" />
+    </form>
+</body>

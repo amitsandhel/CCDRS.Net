@@ -18,20 +18,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Data.Entity;
+using System.Linq;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CCDRS.Pages
 {
     /// <summary>
-    /// Class to display the data for the Specific Station page.
+    /// Class to display the data for the Specific Screenline page.
     /// </summary>
-    public class SpecificStationModel : PageModel
+    public class SpecificScreenlineModel : PageModel
     {
         private readonly CCDRS.Data.CCDRSContext _context;
 
-        public SpecificStationModel(CCDRS.Data.CCDRSContext context)
+        public SpecificScreenlineModel(CCDRS.Data.CCDRSContext context)
         {
             _context = context;
         }
@@ -61,9 +62,9 @@ namespace CCDRS.Pages
         public IList<IndividualCategory> IndividualCategoriesList { get; set; } = default!;
 
         /// <summary>
-        /// Initialize a select list of all stations available for a given region and year.
+        /// Initialize a select list of all screenlines available for a given region.
         /// </summary>
-        public IEnumerable<SelectListItem> StationsSelectList { get; set; } = default!;
+        public IEnumerable<SelectListItem> SelectedScreenlines { get; set; } = default!;
 
         /// <summary>
         /// Set a global default variable to save the variable id this reads the value from the url
@@ -77,7 +78,6 @@ namespace CCDRS.Pages
         /// </summary>
         [BindProperty(SupportsGet = true)]
         public int SelectedSurveyId { get; set; }
-
 
         /// <summary>
         /// Display the data on page load
@@ -101,17 +101,18 @@ namespace CCDRS.Pages
             // Bind the local variable to the ViewData to display to the front-end
             ViewData["SurveyYear"] = surveyYear?.Year;
 
-            // Query station table to return a list of all stations associated with a given region.
-            if (_context.Stations is not null)
+            // Query screenline table to return a list of all screenline associated with a given region.
+            if (_context.Screenlines is not null)
             {
-                StationsSelectList = new SelectList((from st in _context.Stations
-                                                     where st.RegionId == RegionId
-                                                     orderby st.StationCode
-                                                     select new
-                                                     {
-                                                         st.Id,
-                                                         Title = st.StationCode + " " + st.Description
-                                                     }), "Id", "Title");
+                SelectedScreenlines = new SelectList((from screenLine in _context.Screenlines
+                                                        where screenLine.RegionId == RegionId
+                                                        orderby screenLine.SlineCode
+                                                        select new
+                                                        {
+                                                            Id = screenLine.Id,
+                                                            Title = screenLine.SlineCode + " " + screenLine.Note
+                                                        }
+                                                            ), "Id", "Title");
             }
 
             // Query directions table to return direction radiobutton options.
@@ -130,8 +131,7 @@ namespace CCDRS.Pages
                 PersonCountTypeList = Utility.GetTotalPersonCounts(RegionId, SelectedSurveyId);
 
                 // List all technologies options
-                IndividualCategoriesList =
-                    Utility.GetTechnologyCounts(RegionId, SelectedSurveyId);
+                IndividualCategoriesList = Utility.GetTechnologyCounts(RegionId, SelectedSurveyId);
             }
         }
 
@@ -139,8 +139,8 @@ namespace CCDRS.Pages
         /// Post method that executes database query to generate plain/txt format output
         /// </summary>
         /// <returns>Redirects user to a text file page with the results from executed query.</returns>
-        public IActionResult OnPostSubmit(
-            int startTime, int endTime, int SelectedStationId,
+        public IActionResult OnPostSubmit(char[] directionCountSelect,
+            int startTime, int endTime, int SelectedScreenlineId,
             int trafficVolumeRadioButtonSelect,
             int[] individualCategorySelect, IList<IndividualCategory> IndividualCategoriesList
             )
@@ -148,8 +148,8 @@ namespace CCDRS.Pages
             // User selects total volume.
             if (trafficVolumeRadioButtonSelect == 1)
             {
-                string x = GetTotalVolume(startTime,
-                   endTime, SelectedStationId,
+                string x = GetTotalVolume(directionCountSelect, startTime,
+                    endTime, SelectedScreenlineId,
                  individualCategorySelect, IndividualCategoriesList
                  );
                 return Content(x);
@@ -157,8 +157,8 @@ namespace CCDRS.Pages
             else
             {
                 // User selects fifteen minute interval.
-                string x = GetFifteenMinuteInterval(startTime,
-                    endTime, SelectedStationId,
+                string x = GetFifteenMinuteInterval(directionCountSelect, startTime,
+                    endTime, SelectedScreenlineId,
                  individualCategorySelect, IndividualCategoriesList
                  );
                 return Content(x);
@@ -170,51 +170,56 @@ namespace CCDRS.Pages
         /// </summary>
         /// <param name="startTime">Starting time user requested which is the start of the range</param>
         /// <param name="endTime">Ending time user requested which is the end of the range</param>
-        /// <param name="SelectedStationId">User selected Station</param>
+        /// <param name="SelectedScreenlineId">User selected Screenline</param>
         /// <param name="individualCategorySelect">List of all categories selected by user</param>
         /// <param name="individualCategoriesList">Default list of all categories available for selected survey</param>
         /// <returns>String representation of the results</returns>
-        internal string GetFifteenMinuteInterval(int startTime,
-            int endTime, int SelectedStationId,
+        internal string GetFifteenMinuteInterval(char[] directionCountSelect, 
+            int startTime, int endTime, int SelectedScreenlineId,
             int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
         )
         {
-            // Dictionary of station_count records with a key of the tuple of station code and time and an array of observations. 
-            Dictionary<(string stationName, int time), int[]> newlist = new();
+            // Dictionary of station_count records with a key of the tuple of screenline name, time, direction and an array of observations. 
+            Dictionary<(string screenLineName, int time, char direction), int[]> newlist = new();
 
-            // Executes query and returns all station count data 
-            var dataList = (from stationCounts in _context.StationCountObservations
-                            join surveyStations in _context.SurveyStations on stationCounts.SurveyStationId equals surveyStations.Id
-                            join vehicleCountTypes in _context.VehicleCountTypes on stationCounts.VehicleCountTypeId equals vehicleCountTypes.Id
-                            join surveys in _context.Surveys on surveyStations.SurveyId equals surveys.Id
-                            join stations in _context.Stations on surveyStations.StationId equals stations.Id
-                            join vehicles in _context.Vehicles on vehicleCountTypes.VehicleId equals vehicles.Id
-                            where
-                                stations.RegionId == RegionId &
-                                stations.Id == SelectedStationId &
-                                surveys.Id == SelectedSurveyId &
-                                stationCounts.Time > startTime & stationCounts.Time <= endTime &
-                                individualCategorySelect.Contains(vehicleCountTypes.Id)
-                            select new
-                            {
-                                stations.StationCode,
-                                Time = stationCounts.Time,
-                                Observations = stationCounts.Observation,
-                                VehicleCountTypeId = vehicleCountTypes.Id
-                            }
-                      );
+            // Executes query and returns all station count data
+            var dataList = ( from stationcount in _context.StationCountObservations
+                             join surveystation in _context.SurveyStations on stationcount.SurveyStationId equals surveystation.Id
+                             join vehicleCountType in _context.VehicleCountTypes on stationcount.VehicleCountTypeId equals vehicleCountType.Id
+                             join vehicle in _context.Vehicles on vehicleCountType.VehicleId equals vehicle.Id
+                             join station in _context.Stations on surveystation.StationId equals station.Id
+                             join survey in _context.Surveys on surveystation.SurveyId equals survey.Id
+                             join screenlinestation in _context.ScreenlineStations on station.Id equals screenlinestation.StationId
+                             join screenline in _context.Screenlines on screenlinestation.ScreenlineId equals screenline.Id
+                             where screenline.Id == SelectedScreenlineId
+                                && individualCategorySelect.Contains(vehicleCountType.Id)
+                                && stationcount.Time >= startTime & stationcount.Time <= endTime
+                                && directionCountSelect.Contains((char)station.Direction!)
+                                && screenline.RegionId == RegionId
+                                && survey.Id == SelectedSurveyId
+                             group new {stationcount, screenline, station, vehicleCountType} by new { stationcount.Time, screenline.SlineCode, station.Direction, vehicleCountType.Id }
+                             into newgrp
+                             select new
+                             {
+                                 SlineCode = newgrp.Key.SlineCode, 
+                                 Time = newgrp.Key.Time,
+                                 Direction = newgrp.Key.Direction,
+                                 Observations = newgrp.Sum(x => x.stationcount.Observation),
+                                 VehicleCountTypeId = newgrp.Key.Id,
+                             }
+                          );
             foreach (var item in dataList)
             {
-                if (!newlist.TryGetValue((item.StationCode, item.Time), out var counts))
+                if (!newlist.TryGetValue((item.SlineCode, item.Time, item.Direction), out var counts))
                 {
-                    newlist[(item.StationCode, item.Time)] = counts = new int[individualCategorySelect.Length];
+                    newlist[(item.SlineCode, item.Time, item.Direction)] = counts = new int[individualCategorySelect.Length];
                 }
                 counts[Array.IndexOf(individualCategorySelect, item.VehicleCountTypeId)] += item.Observations;
             }
 
             var builder = new StringBuilder();
             // Build the header
-            builder.Append("Station,Time");
+            builder.Append("Sline,Time");
             foreach (var item in individualCategorySelect)
             {
                 var category = Utility.TechnologyNames.First(c => c.id == item);
@@ -223,12 +228,14 @@ namespace CCDRS.Pages
             builder.AppendLine();
 
             foreach (var item in from x in newlist.Keys
-                                 orderby x.stationName, x.time
+                                 orderby x.screenLineName, x.time
                                  select x
-                                 )
+                                     )
             {
                 var row = newlist[item];
-                builder.Append(item.stationName);
+                builder.Append(item.screenLineName);
+                builder.Append(',');
+                builder.Append(item.direction);
                 builder.Append(',');
                 builder.Append(item.time);
                 foreach (var x in row)
@@ -246,54 +253,57 @@ namespace CCDRS.Pages
         /// </summary>
         /// <param name="startTime">Starting time user requested which is the start of the range</param>
         /// <param name="endTime">Ending time user requested which is the end of the range</param>
-        /// <param name="selectedStationId">Id of the selected station</param>
+        /// <param name="SelectedScreenlineId">User selected Screenline</param>
         /// <param name="individualCategorySelect">List of all categories selected by user</param>
         /// <param name="IndividualCategoriesList">Default list of all categories available for selected survey</param>
         /// <returns>String representation of the results</returns>
-        internal string GetTotalVolume(int startTime, int endTime,
-            int selectedStationId,
-            int[] individualCategorySelect,
-             IList<IndividualCategory> IndividualCategoriesList
+        internal string GetTotalVolume(char[] directionCountSelect,
+            int startTime, int endTime, int SelectedScreenlineId,
+            int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
             )
         {
-            // Dictionary of station_count records with a key of station code and an array of observations. 
-            Dictionary<string, int[]> newlist = new();
+            // Dictionary of station_count records with a key of the tuple of screenline and direction and an array of observations. 
+            Dictionary<(string screenlinename, char direction), int[]> newlist = new();
 
-            // Executes query and returns all station count data
-            var dataList = (from stationCounts in _context.StationCountObservations
-                            join surveyStation in _context.SurveyStations on stationCounts.SurveyStationId equals surveyStation.Id
-                            join vehicleCountTypes in _context.VehicleCountTypes on stationCounts.VehicleCountTypeId equals vehicleCountTypes.Id
-                            join surveys in _context.Surveys on surveyStation.SurveyId equals surveys.Id
-                            join stations in _context.Stations on surveyStation.StationId equals stations.Id
-                            join vehicles in _context.Vehicles on vehicleCountTypes.VehicleId equals vehicles.Id
+            //outputs a list of all stationcount data for all technologies
+            var datalist = (from stationcount in _context.StationCountObservations
+                            join stationsurvey in _context.SurveyStations on stationcount.SurveyStationId equals stationsurvey.Id
+                            join vehiclecount in _context.VehicleCountTypes on stationcount.VehicleCountTypeId equals vehiclecount.Id
+                            join vehicle in _context.Vehicles on vehiclecount.VehicleId equals vehicle.Id
+                            join survey in _context.Surveys on stationsurvey.SurveyId equals survey.Id
+                            join station in _context.Stations on stationsurvey.StationId equals station.Id
+                            join screenlinestation in _context.ScreenlineStations on station.Id equals screenlinestation.StationId
+                            join screenline in _context.Screenlines on screenlinestation.ScreenlineId equals screenline.Id
                             where
-                                stations.RegionId == RegionId &
-                                stations.Id == selectedStationId &
-                                surveys.Id == SelectedSurveyId &
-                                stationCounts.Time > startTime & stationCounts.Time <= endTime &
-                                individualCategorySelect.Contains(vehicleCountTypes.Id)
-                            group new { stationCounts, vehicleCountTypes, stations, vehicles } by new { stations.StationCode, vehicles.Name, vehicleCountTypes.Occupancy, vehicleCountTypes.Id }
-                            into groupedBystationCountObservations
+                                screenline.RegionId == RegionId
+                                && survey.Id == SelectedSurveyId
+                                && directionCountSelect.Contains((char)station.Direction!)
+                                && screenline.Id == SelectedScreenlineId
+                                && stationcount.Time >= startTime & stationcount.Time <= endTime
+                                && individualCategorySelect.Contains(vehiclecount.Id)
+                            group new { screenline, stationcount, vehicle, vehiclecount, station }
+                            by new { screenline.SlineCode, vehicle.Name, vehiclecount.Occupancy, vehiclecount.Id, station.Direction }
+                            into grp
                             select new
                             {
-                                Station = groupedBystationCountObservations.Key.StationCode,
-                                Observations = groupedBystationCountObservations.Sum(x => x.stationCounts.Observation),
-                                VehicleCountTypeId = groupedBystationCountObservations.Key.Id,
-                                groupedBystationCountObservations.Key.Occupancy
+                                SlineCode = grp.Key.SlineCode,
+                                Observations = grp.Sum(x => x.stationcount.Observation),
+                                VehicleCountTypeId = grp.Key.Id,
+                                Direction = grp.Key.Direction
                             }
                       );
-            foreach (var item in dataList)
+            foreach (var item in datalist)
             {
-                if (!newlist.TryGetValue(item.Station, out var counts))
+                if (!newlist.TryGetValue((item.SlineCode, item.Direction), out var counts))
                 {
-                    newlist[item.Station] = counts = new int[individualCategorySelect.Length];
+                    newlist[(item.SlineCode, item.Direction)] = counts = new int[individualCategorySelect.Length];
                 }
                 counts[Array.IndexOf(individualCategorySelect, item.VehicleCountTypeId)] += item.Observations;
             }
 
             var builder = new StringBuilder();
             // Build the header
-            builder.Append("Station,startTime,endTime");
+            builder.Append("sline,direction,startTime,endTime");
             foreach (var item in individualCategorySelect)
             {
                 var category = Utility.TechnologyNames.First(c => c.id == item);
@@ -301,10 +311,15 @@ namespace CCDRS.Pages
             }
             builder.AppendLine();
 
-            foreach (var item in newlist.Keys.OrderBy(x => x))
+            foreach (var item in from x in newlist.Keys
+                                 orderby x.screenlinename
+                                 select x
+                                 )
             {
                 var row = newlist[item];
-                builder.Append(item);
+                builder.Append(item.screenlinename);
+                builder.Append(',');
+                builder.Append(item.direction);
                 builder.Append(',');
                 builder.Append(startTime);
                 builder.Append(',');

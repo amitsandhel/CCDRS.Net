@@ -176,7 +176,7 @@ namespace CCDRS.Pages
                                 stations.StationCode,
                                 Time = stationCounts.Time,
                                 Observations = stationCounts.Observation,
-                                npFKId = vehicleCountTypes.Id
+                                VehicleCountTypeId = vehicleCountTypes.Id
                             }
                       );
             foreach (var item in dataList)
@@ -185,7 +185,7 @@ namespace CCDRS.Pages
                 {
                     stationCountRecords[(item.StationCode, item.Time)] = counts = new int[individualCategorySelect.Length];
                 }
-                counts[Array.IndexOf(individualCategorySelect, item.npFKId)] += item.Observations;
+                counts[Array.IndexOf(individualCategorySelect, item.VehicleCountTypeId)] += item.Observations;
             }
 
             var builder = new StringBuilder();
@@ -251,7 +251,7 @@ namespace CCDRS.Pages
                             {
                                 Station = newgrp.Key.StationCode,
                                 Observations = newgrp.Sum(x => x.stationCounts.Observation),
-                                npFKId = newgrp.Key.Id,
+                                VehicleCountTypeId = newgrp.Key.Id,
                                 newgrp.Key.Occupancy
                             }
                       );
@@ -261,7 +261,7 @@ namespace CCDRS.Pages
                 {
                     newlist[item.Station] = counts = new int[individualCategorySelect.Length];
                 }
-                counts[Array.IndexOf(individualCategorySelect, item.npFKId)] += item.Observations;
+                counts[Array.IndexOf(individualCategorySelect, item.VehicleCountTypeId)] += item.Observations;
             }
 
             var builder = new StringBuilder();

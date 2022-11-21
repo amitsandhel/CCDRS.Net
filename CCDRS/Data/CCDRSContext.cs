@@ -78,9 +78,11 @@ public partial class CCDRSContext : DbContext
     public virtual DbSet<StationCountObservation> StationCountObservations { get; set; }
 
     /// <summary>
-    /// Allow pages to access the individualCategory view
+    /// Allow pages to access the individualCategory as a service.
     /// </summary>
     public virtual DbSet<IndividualCategory> IndividualCategories { get; set; }
+
+    public virtual DbSet<ScreenlineStation> ScreenlineStations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -158,6 +160,26 @@ public partial class CCDRSContext : DbContext
                 .HasConstraintName("vehicle_count_type_vehicle_id_fkey");
         });
 
+        // Association of Screenline class to screenline database attributes.
+        modelBuilder.Entity<Screenline>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("screenline_pkey");
+
+            entity.ToTable("screenline");
+
+            entity.HasIndex(e => new { e.RegionId, e.SlineCode }, "screenline_region_id_sline_code_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Note).HasColumnName("note");
+            entity.Property(e => e.RegionId).HasColumnName("region_id");
+            entity.Property(e => e.SlineCode).HasColumnName("sline_code");
+
+            entity.HasOne(d => d.Region).WithMany(p => p.Screenlines)
+                .HasForeignKey(d => d.RegionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("screenline_region_id_fkey");
+        });
+
         // Association of Station class to station database attributes.
         modelBuilder.Entity<Station>(entity =>
         {
@@ -180,43 +202,6 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.RegionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("station_region_id_fkey");
-        });
-
-        // Association of Screenline class to screenline database attributes.
-        modelBuilder.Entity<Screenline>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("screenline_pkey");
-
-            entity.ToTable("screenline");
-
-            entity.HasIndex(e => new { e.RegionId, e.SlineCode }, "screenline_region_id_sline_code_key").IsUnique();
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Note).HasColumnName("note");
-            entity.Property(e => e.RegionId).HasColumnName("region_id");
-            entity.Property(e => e.SlineCode).HasColumnName("sline_code");
-
-            entity.HasOne(d => d.Region).WithMany(p => p.Screenlines)
-                .HasForeignKey(d => d.RegionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("screenline_region_id_fkey");
-
-            entity.HasMany(d => d.Stations).WithMany(p => p.Screenlines)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ScreenlineStation",
-                    r => r.HasOne<Station>().WithMany()
-                        .HasForeignKey("StationId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("screenline_station_station_id_fkey"),
-                    l => l.HasOne<Screenline>().WithMany()
-                        .HasForeignKey("ScreenlineId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("screenline_station_screenline_id_fkey"),
-                    j =>
-                    {
-                        j.HasKey("ScreenlineId", "StationId").HasName("screenline_station_pkey");
-                        j.ToTable("screenline_station");
-                    });
         });
 
         // Association of SurveyStation to survey_station database attributes
@@ -266,7 +251,7 @@ public partial class CCDRSContext : DbContext
                 .HasConstraintName("station_count_observation_vehicle_count_type_id_fkey");
         });
 
-        // Association of IndividualCategoryvie to individual_categories attributes.
+        // Association of IndividualCategoryview to individual_categories attributes.
         modelBuilder.Entity<IndividualCategory>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("individual_categories_pkey");
@@ -283,6 +268,30 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.VehicleCountTypeId).HasColumnName("vehicle_count_type_id");
             entity.Property(e => e.VehicleName).HasColumnName("vehicle_name");
             entity.Property(e => e.Year).HasColumnName("year");
+        });
+
+        modelBuilder.Entity<ScreenlineStation>(entity =>
+        {
+            entity.HasNoKey();
+
+            entity.ToTable("screenline_station");
+
+            entity.HasIndex(e => new { e.ScreenlineId, e.StationId }, "screenline_station_screenline_id_station_id_key")
+                .IsUnique();
+
+            entity.Property(e => e.ScreenlineId).HasColumnName("screenline_id");
+
+            entity.Property(e => e.StationId).HasColumnName("station_id");
+
+            entity.HasOne(d => d.Screenline)
+                .WithMany()
+                .HasForeignKey(d => d.ScreenlineId)
+                .HasConstraintName("screenline_station_screenline_id_fkey");
+
+            entity.HasOne(d => d.Station)
+                .WithMany()
+                .HasForeignKey(d => d.StationId)
+                .HasConstraintName("screenline_station_station_id_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

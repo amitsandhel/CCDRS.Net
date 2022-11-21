@@ -18,6 +18,9 @@ using System.Collections.Generic;
 
 namespace CCDRS.Model;
 
+/// <summary>
+/// Class that maps to the vehicle_count_type table
+/// </summary>
 public partial class VehicleCountType
 {
     /// <summary>
