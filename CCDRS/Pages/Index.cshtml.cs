@@ -87,7 +87,7 @@ namespace CCDRS.Pages
         // redirect to the AllScreenline page
         public IActionResult OnPostAllScreenlines()
         {
-            return RedirectToPage("AllScreenlines", new { SelectedSurveyId, regionId });
+            return RedirectToPage("AllScreenline", new { SelectedSurveyId, regionId });
         }
 
         // redirect to the Specific Station page
