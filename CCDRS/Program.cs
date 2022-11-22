@@ -15,7 +15,9 @@
 
 using CCDRS;
 using CCDRS.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,32 @@ builder.Services.AddRazorPages();
 // Add our database contexts to PostgreSql
 builder.Services.AddDbContext<CCDRSContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("TestDBContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
+
+// Mongodb connection and add services to the container.
+builder.Services.Configure<MongoDBUserContext>(
+    builder.Configuration.GetSection("MongoDB"));
+builder.Services.AddSingleton<MongoDBUserService>();
+
+//Authentication using cookies 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.SlidingExpiration = true;
+        options.AccessDeniedPath = "/Forbidden/";
+    }
+);
+
+// Block pages and ensure all pages require authentication.
+builder.Services.AddRazorPages(options =>
+    {
+        options.Conventions.AuthorizePage("/Index");
+        options.Conventions.AuthorizePage("/AllStation");
+        options.Conventions.AuthorizePage("/AllScreenline");
+        options.Conventions.AuthorizePage("/SpecificStation");
+        options.Conventions.AuthorizePage("/SpecificScreenline");
+    }
+);
 
 var app = builder.Build();
 
@@ -47,9 +75,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+// Activate the login authentication system
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
+app.MapDefaultControllerRoute();
 app.Run();
