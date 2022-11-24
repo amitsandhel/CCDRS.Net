@@ -2,10 +2,10 @@
 {
         <form method="post" class="form-inline" asp-page="Account/Logout">
             Welcome @User.Identity.Name
-            <button type="submit" class="btn btn-lg btn-primary btn-block" >Logout</button>
+        <button type="submit" class="btn btn-sm btn-primary btn-block float-right">Logout</button>
         </form>
 }
 else
 {
-        <a class="btn btn-link" asp-page="/CCDRS">Login</a>
+        <a class="btn btn-sm btn-primary float-right" asp-page="/CCDRS">Login</a>
 }

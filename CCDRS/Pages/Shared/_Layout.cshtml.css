@@ -1,4 +1,19 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+﻿/*
+    Copyright 2022 University of Toronto
+    This file is part of CCDRS.
+    CCDRS is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    CCDRS is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
 a.navbar-brand {
@@ -8,7 +23,7 @@ a.navbar-brand {
 }
 
 a {
-  color: #0077cc;
+    color: #fff;
 }
 
 .btn-primary {
@@ -45,4 +60,31 @@ button.accept-policy {
   width: 100%;
   white-space: nowrap;
   line-height: 60px;
+}
+
+.navbar {
+    padding: 0rem;
+    /*margin-bottom: 2rem;*/
+}
+
+/* Title Box */
+.titlebox {
+    color: #fff;
+    background-color: #1ca8dd;
+    background-image: linear-gradient(to bottom, #137499, #1ca8dd);
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+    font-size: 34px;
+    text-align: center;
+}
+
+/* Medium devices (tablets, 768px and up) 
+The navbar toggle appears at this breakpoint */
+@media (min-width: 768px) {
+    .dropdown:hover .dropdown-menu {
+        display: block;
+        margin-top: 0;
+        border-radius: 0;
+    }
 }

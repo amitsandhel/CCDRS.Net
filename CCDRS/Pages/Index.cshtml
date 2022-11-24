@@ -4,18 +4,14 @@
     ViewData["Title"] = "Home page";
 }
 
-@*<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>*@
-
 <body>
     <div>
         <h3>Please Select A Region and Year</h3>
+        <hr class="border border-primary" />
         <p>Note you can only select one year and region at a time</p>
     </div>
     <form method="post">
-        <div>
+        <div style="margin-bottom:30px">
             @foreach (var regionId in Model.RegionList)
             {
                 <input id="@regionId" type="radio" name="regionId" asp-for="regionId" value="@regionId.Id" />
@@ -23,21 +19,27 @@
             }
             <br />
         </div>
-        <h4>Year</h4>
-        <select asp-for="SelectedSurveyId"></select>
 
-        <div>
-            <h4>Extract Data For:</h4>
-            <input type="submit" class="btn btn-primary" value="All Station" asp-page-handler="AllStation" />
-            <input type="submit" class="btn btn-primary" value="All Screenlines" asp-page-handler="AllScreenlines" />
-            <input type="submit" class="btn btn-primary" value="Specific Station" asp-page-handler="SpecificStation" />
-            <input type="submit" class="btn btn-primary" value="Specific Screenlines" asp-page-handler="SpecificScreenline" />
+        <div style="margin-bottom:30px">
+            <h6>Year</h6>
+            <select class="form-control" style=" margin-bottom:50px; background-color:#434857; border:1px solid #434857; color:white; border-radius:4px;" asp-for="SelectedSurveyId"></select>
+        </div>
 
+        <hr class="border border-primary" />
+        
+        <div style="margin-bottom:30px;">
+            <h4>Extract data for:</h4>
+            <hr class="border border-primary" />
+            <input type="submit" id="Button" class="btn btn-primary" style="margin-right:10px" disabled="true" value="All Stations" asp-page-handler="AllStation" />
+            <input type="submit" id="Button" class="btn btn-primary" style="margin-right:10px" disabled="true" value="All Screenlines" asp-page-handler="AllScreenlines" />
+            <input type="submit" id="Button" class="btn btn-primary" style="margin-right:10px" disabled="true" value="Specific Station" asp-page-handler="SpecificStation" />
+            <input type="submit" id="Button" class="btn btn-primary" style="margin-right:10px" disabled="true" value="Specific Screenline" asp-page-handler="SpecificScreenline" />
         </div>
     </form>
 
-    <div>
+    <div style="margin-bottom:30px;">
         <h3>Info:</h3>
+        <hr class="border border-primary" />
         <a href='http://dmg.utoronto.ca/pdf/ccdrs/ccdrs_manual.pdf' a().icon.icon-download>User Manual</a>
         <br />
         <a href='http://dmg.utoronto.ca/pdf/ccdrs/app_files/corcnt.pdf'>Detailed description of database</a>
@@ -58,6 +60,12 @@
                         $("#SelectedSurveyId").append(`<option value="${item.id}">${item.year}</option>`);
                     });
                 });
+            });
+        });
+        //function to enable submit buttons once user has selected a region.
+        $(function() {
+            $('input[name="regionId"]').on("click", function (e) {
+                $('.btn').prop('disabled', false);
             });
         });
     </script>

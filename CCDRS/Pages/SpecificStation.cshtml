@@ -4,12 +4,12 @@
 }
 
 <body>
-    <h1>Specific Stations for @ViewData["RegionName"] @ViewData["SurveyYear"] </h1>
+    <h1>Specific Station for @ViewData["RegionName"] @ViewData["SurveyYear"] </h1>
     <form method="post">
-         <div>
+        <div style="margin-bottom:30px; margin-top:30px">
             <select name="SelectedStationId" asp-items="Model.StationsSelectList"></select>
-         </div>
-
+        </div>
+        <hr class="border border-primary" />
         <partial name="/Pages/Shared/_CCDRenderPartial.cshtml" />
 
         <input type="hidden" id="regionId" name="regionId" asp-for="RegionId"/>

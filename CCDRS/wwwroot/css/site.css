@@ -27,4 +27,41 @@ body {
 .btn-primary {
     background-color: #1ca8dd;
     color: white;
+
+}
+
+/* change radiobutton fill colour */
+input[type='radio']:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -2px;
+    left: -1px;
+    position: relative;
+    background-color: darkgrey;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+}
+
+/*Change radio button fill colour when selected.*/
+input[type='radio']:checked:after {
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    top: -2px;
+    left: -1px;
+    position: relative;
+    background-color: #1ca8dd;
+    content: '';
+    display: inline-block;
+    visibility: visible;
+    border: 2px solid white;
+}
+
+/* Change background color of checkboxes */
+.form-check-input {
+    background-color: #434857;
+    border: 1px solid #434857;
 }

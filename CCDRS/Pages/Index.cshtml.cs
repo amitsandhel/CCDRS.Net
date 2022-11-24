@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CCDRS.Pages
 {
@@ -79,9 +80,9 @@ namespace CCDRS.Pages
         }
 
         // redirect to the AllStation page
-        public IActionResult OnPostAllStation()
+        public ActionResult OnPostAllStation()
         {
-            return RedirectToPage("AllStation", new { SelectedSurveyId, regionId });
+            return RedirectToPage("AllStation", new { SelectedSurveyId, regionId });  
         }
 
         // redirect to the AllScreenline page
