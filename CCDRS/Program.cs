@@ -26,7 +26,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 // Add our database contexts to PostgreSql
 builder.Services.AddDbContext<CCDRSContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("TestDBContext") ?? throw new InvalidOperationException("Connection string 'RazorPagesMovieContext' not found.")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("TestDBContext") ?? throw new InvalidOperationException("Connection string 'CCDRSContext' not found. Are you connecting to the correct Postgresql Database ?.")));
 
 // Mongodb connection and add services to the container.
 builder.Services.Configure<MongoDBUserContext>(
