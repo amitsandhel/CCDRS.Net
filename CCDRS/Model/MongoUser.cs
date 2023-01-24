@@ -21,6 +21,7 @@ namespace CCDRS.Model
     /// <summary>
     /// Class that maps to the mongo table
     /// </summary>
+    [BsonIgnoreExtraElements]
     public class MongoUser
     {
         /// <summary>
