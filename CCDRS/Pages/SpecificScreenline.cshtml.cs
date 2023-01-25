@@ -140,28 +140,72 @@ namespace CCDRS.Pages
         /// </summary>
         /// <returns>Redirects user to a text file page with the results from executed query.</returns>
         public IActionResult OnPostSubmit(char[] directionCountSelect,
-            int startTime, int endTime, int SelectedScreenlineId,
+            int startTime, int endTime, int[] SelectedScreenlines,
             int trafficVolumeRadioButtonSelect,
             int[] individualCategorySelect, IList<IndividualCategory> IndividualCategoriesList
             )
         {
-            // User selects total volume.
+            // run the query to get a region name and survey year to display in the content header file
+            // Query region table to display the region name to the front end.
+            var regionName = _context.Regions
+                              .Where(r => r.Id == RegionId)
+                              .SingleOrDefault();
+
+            // Query survey table to display the survey year to the front end.
+            var surveyYear = _context.Surveys
+                              .Where(s => s.Id == SelectedSurveyId)
+                              .SingleOrDefault();
+
+
+            var builder = new StringBuilder();
+            // Check to see if user wants to calculate total volume or 15 minute intervals
             if (trafficVolumeRadioButtonSelect == 1)
             {
-                string x = GetTotalVolume(directionCountSelect, startTime,
+                // Build the header of the content file
+                builder.Append(regionName?.Name);
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+                builder.Append("sline,direction,startTime,endTime");
+                foreach (var item in individualCategorySelect)
+                {
+                    var category = Utility.TechnologyNames.First(c => c.id == item);
+                    builder.Append("," + category.name);
+                }
+                builder.AppendLine();
+                // Loop through selected screenlines list and run them
+                foreach (int SelectedScreenlineId in SelectedScreenlines)
+                {
+                    builder.Append(GetTotalVolume(directionCountSelect, startTime,
                     endTime, SelectedScreenlineId,
-                 individualCategorySelect, IndividualCategoriesList
-                 );
-                return Content(x);
+                    individualCategorySelect, IndividualCategoriesList));
+                }
+                return Content(builder.ToString());
             }
             else
             {
-                // User selects fifteen minute interval.
-                string x = GetFifteenMinuteInterval(directionCountSelect, startTime,
+                // Build the header of the content file
+                builder.Append(regionName?.Name);
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+                builder.Append("Sline,Time");
+                foreach (var item in individualCategorySelect)
+                {
+                    var category = Utility.TechnologyNames.First(c => c.id == item);
+                    builder.Append("," + category.name);
+                }
+                builder.AppendLine();
+                // Loop through selected screenlines list and run them
+                foreach (int SelectedScreenlineId in SelectedScreenlines)
+                {
+                    // User selects fifteen minute interval.
+                    builder.Append(GetFifteenMinuteInterval(directionCountSelect, startTime,
                     endTime, SelectedScreenlineId,
-                 individualCategorySelect, IndividualCategoriesList
-                 );
-                return Content(x);
+                    individualCategorySelect, IndividualCategoriesList));
+                }
+                    
+                return Content(builder.ToString());
             }
         }
 
@@ -218,15 +262,6 @@ namespace CCDRS.Pages
             }
 
             var builder = new StringBuilder();
-            // Build the header
-            builder.Append("Sline,Time");
-            foreach (var item in individualCategorySelect)
-            {
-                var category = Utility.TechnologyNames.First(c => c.id == item);
-                builder.Append("," + category.name);
-            }
-            builder.AppendLine();
-
             foreach (var item in from x in newlist.Keys
                                  orderby x.screenLineName, x.time
                                  select x
@@ -302,15 +337,6 @@ namespace CCDRS.Pages
             }
 
             var builder = new StringBuilder();
-            // Build the header
-            builder.Append("sline,direction,startTime,endTime");
-            foreach (var item in individualCategorySelect)
-            {
-                var category = Utility.TechnologyNames.First(c => c.id == item);
-                builder.Append("," + category.name);
-            }
-            builder.AppendLine();
-
             foreach (var item in from x in newlist.Keys
                                  orderby x.screenlinename
                                  select x

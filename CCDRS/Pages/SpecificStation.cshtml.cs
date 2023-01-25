@@ -140,28 +140,71 @@ namespace CCDRS.Pages
         /// </summary>
         /// <returns>Redirects user to a text file page with the results from executed query.</returns>
         public IActionResult OnPostSubmit(
-            int startTime, int endTime, int SelectedStationId,
+            int startTime, int endTime, int[] SelectedStations,
             int trafficVolumeRadioButtonSelect,
             int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
             )
         {
-            // User selects total volume.
+            // run the query to get a region name and survey year to display in the content header file
+            // Query region table to display the region name to the front end.
+            var regionName = _context.Regions
+                              .Where(r => r.Id == RegionId)
+                              .SingleOrDefault();
+
+            // Query survey table to display the survey year to the front end.
+            var surveyYear = _context.Surveys
+                              .Where(s => s.Id == SelectedSurveyId)
+                              .SingleOrDefault();
+
+
+            var builder = new StringBuilder();
+            // Check to see if user wants to calculate total volume or 15 minute intervals
             if (trafficVolumeRadioButtonSelect == 1)
             {
-                string x = GetTotalVolume(startTime,
-                   endTime, SelectedStationId,
-                 individualCategorySelect, individualCategoriesList
-                 );
-                return Content(x);
+                // Build the header of the content file
+                builder.Append(regionName?.Name);
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+                builder.Append("Station,startTime,endTime");
+                foreach (var item in individualCategorySelect)
+                {
+                    var category = Utility.TechnologyNames.First(c => c.id == item);
+                    builder.Append("," + category.name);
+                }
+                builder.AppendLine();
+                // Loop through selected stations list and run them
+                foreach (int SelectedStationId in SelectedStations)
+                {
+                    builder.Append(GetTotalVolume(startTime,
+                      endTime, SelectedStationId,
+                    individualCategorySelect, individualCategoriesList));
+                }
+                return Content(builder.ToString());
             }
             else
             {
-                // User selects fifteen minute interval.
-                string x = GetFifteenMinuteInterval(startTime,
-                    endTime, SelectedStationId,
-                 individualCategorySelect, individualCategoriesList
-                 );
-                return Content(x);
+                // Build the header of the content file
+                builder.Append(regionName?.Name);
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+                builder.Append("Station,Time");
+                foreach (var item in individualCategorySelect)
+                {
+                    var category = Utility.TechnologyNames.First(c => c.id == item);
+                    builder.Append("," + category.name);
+                }
+                builder.AppendLine();
+                //  Loop through selected stations list and run them
+                foreach (int SelectedStationId in SelectedStations)
+                {
+                    // User selects fifteen minute interval.
+                    builder.Append(GetFifteenMinuteInterval(startTime,
+                        endTime, SelectedStationId,
+                     individualCategorySelect, individualCategoriesList));
+                } 
+                return Content(builder.ToString());
             }
         }
 
@@ -176,8 +219,7 @@ namespace CCDRS.Pages
         /// <returns>String representation of the results</returns>
         internal string GetFifteenMinuteInterval(int startTime,
             int endTime, int SelectedStationId,
-            int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
-        )
+            int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList)
         {
             // Dictionary of station_count records with a key of the tuple of station code and time and an array of observations. 
             Dictionary<(string stationName, int time), int[]> newlist = new();
@@ -213,15 +255,6 @@ namespace CCDRS.Pages
             }
 
             var builder = new StringBuilder();
-            // Build the header
-            builder.Append("Station,Time");
-            foreach (var item in individualCategorySelect)
-            {
-                var category = Utility.TechnologyNames.First(c => c.id == item);
-                builder.Append("," + category.name);
-            }
-            builder.AppendLine();
-
             foreach (var item in from x in newlist.Keys
                                  orderby x.stationName, x.time
                                  select x
@@ -292,15 +325,6 @@ namespace CCDRS.Pages
             }
 
             var builder = new StringBuilder();
-            // Build the header
-            builder.Append("Station,startTime,endTime");
-            foreach (var item in individualCategorySelect)
-            {
-                var category = Utility.TechnologyNames.First(c => c.id == item);
-                builder.Append("," + category.name);
-            }
-            builder.AppendLine();
-
             foreach (var item in newlist.Keys.OrderBy(x => x))
             {
                 var row = newlist[item];
