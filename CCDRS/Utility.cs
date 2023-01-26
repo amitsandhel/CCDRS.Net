@@ -154,5 +154,40 @@ namespace CCDRS
                                s.CountType == countType
                             ).ToList();
         }
+
+        /// <summary>
+        /// Method to convert DMG Time to minutes
+        /// </summary>
+        /// <param name="DMGTime">the DMG Start Time</param>
+        /// <returns>An integer of the minutes</returns>
+        private static int FromDMGTimeToMinutes(int DMGTime)
+        {
+            return (((int)(DMGTime / 100) * 60) + (DMGTime % 100));
+        }
+
+        /// <summary>
+        /// Convert minutes to DMG TIME
+        /// </summary>
+        /// <param name="startTimeMinutes"></param>
+        /// <returns></returns>
+        private static int MinutesToDMGTime(int startTimeMinutes)
+        {
+            return ((startTimeMinutes / 60) * 100) + (startTimeMinutes % 60);
+        }
+
+        /// <summary>
+        /// public function to calculate the start time. First converts DMGTIme into minutes
+        /// Subtracts 14 minutes to get the start time and then does the reverse and converts 
+        /// the minutes back into DMGTime
+        /// </summary>
+        /// <param name="dmgTime">the input DMGTime that exists in the database </param>
+        /// <returns>the start time in DMGTime</returns>
+        public static int CalculateStartTime(int dmgTime)
+        {
+            // static integer value of the number of minutes to subtract to get the start time
+            const int minutesToSubtract = 14;
+            int res = FromDMGTimeToMinutes(dmgTime) - minutesToSubtract;
+            return MinutesToDMGTime(res);
+        }
     }
 }

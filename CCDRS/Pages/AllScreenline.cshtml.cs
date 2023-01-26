@@ -208,10 +208,14 @@ namespace CCDRS.Pages
                                  select x
                                      )
             {
+                //Calculate the start time
+                int starttime = Utility.CalculateStartTime(item.time);
                 var row = newlist[item];
                 builder.Append(item.screenLineName);
                 builder.Append(',');
                 builder.Append(item.direction);
+                builder.Append(',');
+                builder.Append(starttime);
                 builder.Append(',');
                 builder.Append(item.time);
                 foreach (var x in row)

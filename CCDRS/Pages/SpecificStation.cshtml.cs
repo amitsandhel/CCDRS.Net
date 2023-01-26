@@ -166,7 +166,7 @@ namespace CCDRS.Pages
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
                 builder.AppendLine();
-                builder.Append("Station,startTime,endTime");
+                builder.Append("Station,StartTime,EndTime");
                 foreach (var item in individualCategorySelect)
                 {
                     var category = Utility.TechnologyNames.First(c => c.id == item);
@@ -189,7 +189,7 @@ namespace CCDRS.Pages
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
                 builder.AppendLine();
-                builder.Append("Station,Time");
+                builder.Append("Station,StartTime,EndTime");
                 foreach (var item in individualCategorySelect)
                 {
                     var category = Utility.TechnologyNames.First(c => c.id == item);
@@ -260,8 +260,12 @@ namespace CCDRS.Pages
                                  select x
                                  )
             {
+                //Calculate the start time
+                int starttime = Utility.CalculateStartTime(item.time);
                 var row = newlist[item];
                 builder.Append(item.stationName);
+                builder.Append(',');
+                builder.Append(starttime);
                 builder.Append(',');
                 builder.Append(item.time);
                 foreach (var x in row)
