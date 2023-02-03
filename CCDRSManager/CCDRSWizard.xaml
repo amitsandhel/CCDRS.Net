@@ -23,12 +23,15 @@
                 <StackPanel>
                     <Label >Region</Label>
                     <ComboBox ItemsSource="{Binding Regions}" 
-                                  SelectedValuePath="Name" 
-                              DisplayMemberPath="Name" 
+                                  SelectedValuePath="Id" 
+                              DisplayMemberPath="Name"
+                              SelectedValue="{Binding RegionId}"
                                   IsEditable="False"/>
                     <Label>Survey</Label>
-                    <TextBox IsEnabled="False"
-                            Name="SurveyBox" />
+                    <TextBox Name="SurveyBox" 
+                     PreviewTextInput="PreviewTextInput"
+                     Text="{Binding SurveyYear}" />
+                    <Button Click="CheckSurveyExists" Content="Check Survey Exists" />
                 </StackPanel>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="Page2" PageType="Interior"
