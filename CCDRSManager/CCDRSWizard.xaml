@@ -7,6 +7,9 @@
         mc:Ignorable="d"
         Title="CCDRSWizard" Height="450" Width="800"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+    <Window.DataContext>
+        <local:CCDRSManagerViewModel />
+    </Window.DataContext>
     <Grid>
         <xctk:Wizard FinishButtonClosesWindow="True">
             <xctk:WizardPage x:Name="IntroPage" 
@@ -19,8 +22,7 @@
                     PreviousPage="{Binding ElementName=IntroPage}">
                 <StackPanel>
                     <Label >Region</Label>
-                    <ComboBox Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="2" 
-                        ItemsSource="{Binding Regions}" 
+                    <ComboBox ItemsSource="{Binding Regions}" 
                                   SelectedValuePath="Name" 
                               DisplayMemberPath="Name" 
                                   IsEditable="False"/>

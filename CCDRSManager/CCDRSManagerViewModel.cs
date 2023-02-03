@@ -13,18 +13,30 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using System.Windows;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using CCDRSManager.Data;
+using CCDRSManager.Model;
 
 namespace CCDRSManager
 {
     /// <summary>
-    /// Interaction logic for CCDRSWizard.xaml
+    /// ViewModel Class to manage and track property changes 
     /// </summary>
-    public partial class CCDRSWizard : Window
+    public class CCDRSManagerViewModel : INotifyPropertyChanged
     {
-        public CCDRSWizard()
+        /// <summary>
+        /// Observable List of all regions that exist in the database.
+        /// </summary>
+        public ReadOnlyObservableCollection<RegionModel> Regions { get; }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        // Initialize the class 
+        public CCDRSManagerViewModel() 
         {
-            InitializeComponent();
+            CCDRSManagerModelRepository ccdrsRepository = App.Us.CCDRSManagerModelRepository;
+            Regions = ccdrsRepository.Regions;
         }
     }
 }

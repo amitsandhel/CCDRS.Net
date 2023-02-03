@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using CCDRSManager.Model;
 using Microsoft.EntityFrameworkCore;
 using CCDRSManager.Model;
+using System.Configuration;
 
 namespace CCDRSManager.Data;
 
@@ -31,6 +32,12 @@ public partial class CCDRSContext : DbContext
         : base(options)
     {
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql(ConfigurationManager.ConnectionStrings["TestDBContext"].ConnectionString);
+    }
+
 
     /// <summary>
     /// Allow pages to access the Direction class as a service.
