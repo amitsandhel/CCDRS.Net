@@ -53,8 +53,15 @@ namespace CCDRSManager
             {
                 if (vm.CheckSurveyExists())
                 {
-                    MessageBox.Show(this, "This data already exists in the database. We will delete all records " +
+                    // If the user clicks the yes button on the message box delete the survey data.
+                    MessageBoxResult messageBoxResult= MessageBox.Show(this, "This data already exists in the database. We will delete all records " +
                    "Click yes to delete all records and no to cancel this operation", "", MessageBoxButton.YesNo);
+                    if (messageBoxResult == MessageBoxResult.Yes)
+                    {
+                        // Delete the survey
+                        vm.DeleteSurveyData();
+                        MessageBox.Show(this, "Survey Data successfully deleted. Please click next to add Station data.");
+                    }
                 }
                 else
                 {
