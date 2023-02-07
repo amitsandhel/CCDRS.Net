@@ -39,8 +39,13 @@
                 <StackPanel>
                     <Label Content="Select Station csv file" />
                     <Button  Name="OpenStationFile"
-                        IsEnabled="False" Content="Upload Station File" />
-                    <TextBox Name="StationFileName" />
+                        Content="Upload Station File"
+                        Click="OpenStationFileDialog"/>
+                    <TextBox Name="StationFileName"
+                        Text="{Binding Path=StationFileName, UpdateSourceTrigger=PropertyChanged}"
+                        />
+                    <Button Click="AddStationData" Content="Add Station Data" />
+                    
                 </StackPanel>
             </xctk:WizardPage>
 
@@ -50,8 +55,8 @@
                 <StackPanel>
                     <Label Content="Select StationCount Data" />
                     <Button Name="OpenFile"
-                         IsEnabled="False" 
-                            Content="Upload StationCount File" />
+                        Content="Upload StationCount File" 
+                        Click="OpenStationCountFile"/>
                     <TextBox Name="FileName" />
                 </StackPanel>
             </xctk:WizardPage>

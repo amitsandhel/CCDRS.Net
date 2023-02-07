@@ -73,10 +73,25 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
+    private string _stationFileName;
+    public string StationFileName
+    {
+        get
+        {
+            return _stationFileName;
+        }
+        set
+        {
+            _stationFileName = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StationFileName)));
+        }
+
+    }
+
     /// <summary>
     /// Controls access to the CCDRS model repository.
     /// </summary>
-    public CCDRSManagerViewModel() 
+    public CCDRSManagerViewModel()
     {
         Regions = _ccdrsRepository.Regions;
     }
@@ -95,5 +110,29 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void DeleteSurveyData()
     {
         _ccdrsRepository.DeleteSurveyData(RegionId, SurveyYear);
+    }
+
+    /// <summary>
+    /// Add survey data to the database.
+    /// </summary>
+    public void AddSurveyData()
+    {
+        _ccdrsRepository.AddSurveyData(RegionId, SurveyYear);
+    }
+
+    /// <summary>
+    /// Add station data to the database.
+    /// </summary>
+    public void AddStationData()
+    {
+        _ccdrsRepository.AddStationData(StationFileName, RegionId);
+    }
+
+    /// <summary>
+    /// Add SurveyStation data to the database.
+    /// </summary>
+    public void AddSurveyStationData()
+    {
+        _ccdrsRepository.AddSurveyStationData(RegionId, SurveyYear);
     }
 }

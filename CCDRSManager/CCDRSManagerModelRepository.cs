@@ -14,8 +14,13 @@
 */
 
 using CCDRSManager.Data;
+using CCDRSManager.Model;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CCDRSManager;
 
@@ -74,6 +79,120 @@ public class CCDRSManagerModelRepository
                         select
                             surveys).ToList();
         _context.Surveys.RemoveRange(dataList);
+        _context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Save the changes to the context to the database when all context changes have finished.
+    /// </summary>
+    /// <returns></returns>
+    public async Task SaveData()
+    {
+        _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Add survey data to the database.
+    /// </summary>
+    /// <param name="regionId">Primary serial key of regionId as an integer.</param>
+    /// <param name="surveyYear">Year of survey e.g. 2022.</param>
+    public void AddSurveyData(int regionId, int surveyYear)
+    {
+        // Create a new survey object.
+        Survey survey = new Survey();
+        survey.RegionId = regionId;
+        survey.Year = surveyYear;
+        _context.Surveys.Add(survey);
+        _context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Check if station exists in the database and only add new stations to the survey.
+    /// </summary>
+    /// <param name="regionId">Primary serial key of the region.</param>
+    /// <param name="stationCode">StationCode number used to check if station exists in the database.</param>
+    /// <param name="stationDescription">Description of station provided by agency.</param>
+    public void AddStationIfNotExists(int regionId, string stationCode, string stationDescription)
+    {
+        // Check if stationCode exists in database.
+        var stationExists = (from stations in _context.Stations
+                              join regions in _context.Regions on stations.RegionId equals regions.Id
+                              where
+                                regions.Id == regionId
+                                && stations.StationCode == stationCode
+                              select
+                                stations).Any();
+
+        // Add new stationCode to the stations context if stationExists return False.
+        if (stationExists == false)
+        {
+            // Add new station code to the Stations context.
+            Station newStation = new Station();
+            newStation.StationCode = stationCode;
+            newStation.Description = stationDescription;
+            _context.Stations.Add(newStation);
+            _context.SaveChanges();
+        }
+    }
+
+    /// <summary>
+    /// Add station data to the database
+    /// </summary>
+    /// <param name="stationFileName">String path to station csv file.</param>
+    /// <param name="regionId">Primary serial key of the region.</param>
+    public void AddStationData(string stationFileName, int regionId)
+    {
+        // Loop through the station csv file
+        string[] data;
+        using (var readFile = new StreamReader(stationFileName))
+        {
+            string? line;
+            string[] row;
+            readFile.ReadLine();
+            // loop through the line
+            while ((line = readFile.ReadLine()) is not null)
+            {
+                row = line.Split(';');
+                // add station data
+                AddStationIfNotExists(regionId, row[0], row[1]);
+            }
+        };
+    }
+
+    /// <summary>
+    /// Add the surveysstation data of new survey to the database.
+    /// </summary>
+    /// <param name="regionId">Primary serial key of the region.</param>
+    /// <param name="surveyYear">Year of survey e.g. 2022.</param>
+    public void AddSurveyStationData(int regionId, int surveyYear)
+    {
+        //find the survey id 
+        var surveyID = (from surveys in _context.Surveys
+                        join regions in _context.Regions on surveys.RegionId equals regions.Id
+                        where
+                            regions.Id == regionId
+                            && surveys.Year == surveyYear
+                        select
+                            surveys
+                        ).FirstOrDefault();
+
+        //find stations list of all stations of specific region
+        var stationList = (from stations in _context.Stations
+                           join regions in _context.Regions on stations.RegionId equals regions.Id
+                           where
+                              regions.Id == regionId
+                           select
+                              stations).ToList();
+
+        //combine the survey with the stationList to make the new surveystation context.
+        foreach (var station in stationList)
+        {
+            SurveyStation ss = new SurveyStation();
+            ss.StationId = station.Id;
+            ss.SurveyId = surveyID.Id;
+            _context.SurveyStations.Add(ss);
+        }
+        //save the context to the database.
         _context.SaveChanges();
     }
 }

@@ -13,9 +13,11 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using Microsoft.Win32;
 using System;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace CCDRSManager
 {
@@ -69,6 +71,65 @@ namespace CCDRSManager
                         "Click next to add station data");
                 }
             }
+        }
+
+        /// <summary>
+        /// Generic method to open a window dialog box to upload a file. 
+        /// </summary>
+        /// <param name="nameOfTextbox">Name of Textbox control.</param>
+        public void OpenFileDialog(TextBox nameOfTextbox)
+        {
+            // Configure open file dialog box
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+                string filename = dialog.FileName;
+                nameOfTextbox.Text = filename;
+            }
+        }
+
+
+        /// <summary>
+        /// Open the station file dialog window to upload a station csv file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenStationFileDialog(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog(StationFileName);
+
+        }
+
+        /// <summary>
+        /// Open the stationcount observation window dialog window to select stationcount observation file.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenStationCountFile(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog(FileName);
+        }
+
+        /// <summary>
+        /// Add the Station Data to the database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddStationData(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is CCDRSManagerViewModel vm)
+            {
+                vm.AddSurveyData();
+                vm.AddStationData();
+                vm.AddSurveyStationData();
+                MessageBox.Show(this, "Successfully added survey and station data to the database.");
+            }
+
         }
     }
 }
