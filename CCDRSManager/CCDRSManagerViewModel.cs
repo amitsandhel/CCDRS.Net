@@ -28,7 +28,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     /// <summary>
     /// ccdrsRepository variable used and accessed by all methods.
     /// </summary>
-    private readonly CCDRSManagerModelRepository _ccdrsRepository = App.Us.CCDRSManagerModelRepository;
+    private readonly CCDRSManagerModelRepository _ccdrsRepository = Configuration.CCDRSManagerModelRepository;
 
     /// <summary>
     /// Observable List of all regions that exist in the database.
@@ -88,6 +88,20 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
 
     }
 
+    private string _stationCountObservationFile;
+    public string StationCountObservationFile
+    {
+        get
+        {
+            return _stationCountObservationFile;
+        }
+        set
+        {
+            _stationCountObservationFile = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(StationCountObservationFile)));
+        }
+    }
+
     /// <summary>
     /// Controls access to the CCDRS model repository.
     /// </summary>
@@ -134,5 +148,13 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddSurveyStationData()
     {
         _ccdrsRepository.AddSurveyStationData(RegionId, SurveyYear);
+    }
+
+    /// <summary>
+    /// Add StationCountObservation data to the database.
+    /// </summary>
+    public void AddStationCountObserationData()
+    {
+        _ccdrsRepository.AddStationCountObservationData(StationCountObservationFile, RegionId, SurveyYear);
     }
 }

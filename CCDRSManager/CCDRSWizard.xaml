@@ -45,7 +45,6 @@
                         Text="{Binding Path=StationFileName, UpdateSourceTrigger=PropertyChanged}"
                         />
                     <Button Click="AddStationData" Content="Add Station Data" />
-                    
                 </StackPanel>
             </xctk:WizardPage>
 
@@ -57,7 +56,9 @@
                     <Button Name="OpenFile"
                         Content="Upload StationCount File" 
                         Click="OpenStationCountFile"/>
-                    <TextBox Name="FileName" />
+                    <TextBox Name="StationCountObservationFile" 
+                         Text="{Binding Path=StationCountObservationFile, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Click="AddStationCountObservationData" Content="Add StationCount Observation Data" />
                 </StackPanel>
             </xctk:WizardPage>
         </xctk:Wizard>

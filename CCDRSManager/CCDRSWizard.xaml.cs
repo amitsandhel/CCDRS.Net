@@ -112,7 +112,7 @@ namespace CCDRSManager
         /// <param name="e"></param>
         private void OpenStationCountFile(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog(FileName);
+            OpenFileDialog(StationCountObservationFile);
         }
 
         /// <summary>
@@ -130,6 +130,20 @@ namespace CCDRSManager
                 MessageBox.Show(this, "Successfully added survey and station data to the database.");
             }
 
+        }
+
+        /// <summary>
+        /// Add StationCountObservation data to the database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddStationCountObservationData(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is CCDRSManagerViewModel vm)
+            {
+                vm.AddStationCountObserationData();
+                MessageBox.Show(this, "Successfully added station count observation data to the database.Press Finish and close the wizard.");
+            }
         }
     }
 }

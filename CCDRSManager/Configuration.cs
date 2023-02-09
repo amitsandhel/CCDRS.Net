@@ -14,23 +14,21 @@
 */
 
 using CCDRSManager.Data;
-using System.Windows;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CCDRSManager
+namespace CCDRSManager;
+
+public static class Configuration
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-        public App()
-        {
-            Configuration.Initialize();
-        }
+    private static readonly CCDRSContext _context = new CCDRSContext();
+    public static CCDRSManagerModelRepository CCDRSManagerModelRepository { get; private set; }
 
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            base.OnStartup(e);
-        }
+    public static void Initialize()
+    {
+        CCDRSManagerModelRepository = new CCDRSManagerModelRepository(_context);
     }
 }
