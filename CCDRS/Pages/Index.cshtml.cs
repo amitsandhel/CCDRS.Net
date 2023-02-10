@@ -36,10 +36,10 @@ namespace CCDRS.Pages
         }
 
         // initialize list of regions 
-        public IList<Region> RegionList { get; set; }
+        public IList<Region>? RegionList { get; set; }
         
         //initialize list of all years associated with a region
-        public IList<Survey> SurveyList { get; set; }
+        public IList<Survey>? SurveyList { get; set; }
 
         /// <summary>
         /// Get Method which displays the contents on the main CCDRS page

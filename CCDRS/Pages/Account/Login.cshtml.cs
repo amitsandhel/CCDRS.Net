@@ -51,7 +51,7 @@ namespace CCDRS.Pages.Account
         [BindProperty]
         [Required]
         [Display(Name = "EmailAddress")]
-        public string UserName { get; set; }
+        public string UserName { get; set; } = string.Empty;
 
         /// <summary>
         /// User inputted password.
@@ -60,7 +60,7 @@ namespace CCDRS.Pages.Account
         [Required]
         [Display(Name = "Password")]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
 
         public async Task<IActionResult> OnPostAsync()

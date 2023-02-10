@@ -29,38 +29,38 @@ namespace CCDRS.Model
         /// </summary>
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        public string Id { get; set; } = string.Empty;
 
         /// <summary>
         /// Affiliation of user. 
         /// </summary>
-        public string? aff { get; set; }
+        public string aff { get; set; } = string.Empty;
 
         /// <summary>
         /// Email address of user.
         /// </summary>
-        public string? email { get; set; }
+        public string email { get; set; } = string.Empty;
 
         /// <summary>
         /// Phone of user.
         /// </summary>
-        public string? phone { get; set; }
+        public string phone { get; set; } = string.Empty;
 
         /// <summary>
         /// Name of user, First and last name
         /// </summary>
-        public string? name { get; set; }
+        public string name { get; set; } = string.Empty;
 
         /// <summary>
         /// Salt value used to decrypt the password.
         /// </summary>
         [BsonRepresentation(BsonType.Binary)]
-        public byte[]? salt { get; set; }
+        public byte[] salt { get; set; } = Array.Empty<byte>();
 
         /// <summary>
         /// Password of user as a hashed value
         /// </summary>
         [BsonRepresentation(BsonType.Binary)]
-        public byte[]? hashPW { get; set; }
+        public byte[] hashPW { get; set; } = Array.Empty<byte>();
     }
 }

@@ -300,8 +300,8 @@ public partial class CCDRSManagerModelRepository
             string[] observationData;
 
             // Extract the header of the csv file which contains the columns of vehicle types.
-            headerLine = readFile.ReadLine().Split(',');
-
+            headerLine = readFile.ReadLine()?.Split(',') ?? throw new Exception("No header file found");
+            
             // Loop through header to check if the vehicle exists in the database or not
             foreach (string technology in headerLine)
             {

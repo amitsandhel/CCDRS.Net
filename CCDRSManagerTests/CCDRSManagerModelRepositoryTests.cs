@@ -14,7 +14,6 @@ namespace CCDRSManager.Tests
         [Microsoft.VisualStudio.TestTools.UnitTesting.AssemblyInitialize]
         public void StartUp()
         {
-            Configuration.Initialize();
         }
 
         [TestMethod()]

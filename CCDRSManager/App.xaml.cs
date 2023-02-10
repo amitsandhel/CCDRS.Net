@@ -25,7 +25,7 @@ namespace CCDRSManager
     {
         public App()
         {
-            Configuration.Initialize();
+
         }
 
         protected override void OnStartup(StartupEventArgs e)

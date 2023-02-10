@@ -31,7 +31,7 @@ public partial class IndividualCategory
     /// <summary>
     /// The name of the Vehicle
     /// </summary>
-    public string VehicleName { get; set; }
+    public string? VehicleName { get; set; }
 
     /// <summary>
     /// The number of occupants that can sit in a vehicle
@@ -41,7 +41,7 @@ public partial class IndividualCategory
     /// <summary>
     /// Human readable description of the vehicle
     /// </summary>
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     /// <summary>
     /// Foreign key to the vehicle_count_type table associated to the vehicle_count_type primary key attribute.
@@ -56,7 +56,7 @@ public partial class IndividualCategory
     /// <summary>
     /// Name of the region
     /// </summary>
-    public string RegionName { get; set; }
+    public string? RegionName { get; set; }
 
     /// <summary>
     /// Primary serial key of the rgion

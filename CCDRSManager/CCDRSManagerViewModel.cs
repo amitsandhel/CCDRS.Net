@@ -73,7 +73,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
-    private string _stationFileName;
+    private string _stationFileName = string.Empty;
     public string StationFileName
     {
         get
@@ -88,7 +88,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
 
     }
 
-    private string _stationCountObservationFile;
+    private string _stationCountObservationFile = string.Empty;
     public string StationCountObservationFile
     {
         get

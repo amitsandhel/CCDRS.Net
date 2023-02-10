@@ -37,7 +37,7 @@ namespace CCDRS.Pages
         /// Initialize dropdown list of directions used to store user selected directions.
         /// </summary>
         [BindProperty]
-        public IList<Direction> DirectionList { get; set; }
+        public IList<Direction> DirectionList { get; set; } = null!;
 
         /// <summary>
         /// Initialize list of vehicle count types used to store user selected vehicle count options.
@@ -74,7 +74,7 @@ namespace CCDRS.Pages
         /// Display the data on page load
         /// </summary>
         /// <returns>The html page with the populated data</returns>
-        public async Task OnGetAsync()
+        public void OnGet()
         {
             // Query region table to display the region name to the front end.
             var regionName = _context.Regions
