@@ -15,7 +15,7 @@
             <xctk:WizardPage x:Name="IntroPage" 
                                    Title="Welcome to the CCDRS Survey upload Wizxard"
                                    Description="This Wizard will walk you though how to upload a survey" />
-            
+
             <xctk:WizardPage x:Name="Page1" PageType="Interior"
                     Title="Please Select a survey region and year"
                     NextPage="{Binding ElementName=Page2}"
@@ -31,7 +31,7 @@
                     <TextBox Name="SurveyBox" 
                      PreviewTextInput="PreviewTextInput"
                      Text="{Binding SurveyYear}" />
-                    <Button Click="CheckSurveyExists" Content="Check Survey Exists" />
+                    <Button Name="CheckSurvey" Click="CheckSurveyExists" Content="Check Survey Exists" />
                 </StackPanel>
             </xctk:WizardPage>
             <xctk:WizardPage x:Name="Page2" PageType="Interior"

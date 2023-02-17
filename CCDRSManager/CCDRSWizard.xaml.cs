@@ -13,8 +13,6 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using Microsoft.Win32;
-using System;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,12 +49,12 @@ namespace CCDRSManager
         /// <param name="e"></param>
         private void CheckSurveyExists(object sender, RoutedEventArgs e)
         {
-            if (DataContext is CCDRSManagerViewModel vm) 
+            if (DataContext is CCDRSManagerViewModel vm)
             {
                 if (vm.CheckSurveyExists())
                 {
                     // If the user clicks the yes button on the message box delete the survey data.
-                    MessageBoxResult messageBoxResult= MessageBox.Show(this, "This data already exists in the database. We will delete all records " +
+                    MessageBoxResult messageBoxResult = MessageBox.Show(this, "This data already exists in the database. We will delete all records " +
                    "Click yes to delete all records and no to cancel this operation", "", MessageBoxButton.YesNo);
                     if (messageBoxResult == MessageBoxResult.Yes)
                     {

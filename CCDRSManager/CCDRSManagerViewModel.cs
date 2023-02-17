@@ -15,8 +15,6 @@
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using CCDRSManager.Data;
-using CCDRSManager.Model;
 
 namespace CCDRSManager;
 
@@ -74,6 +72,10 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     }
 
     private string _stationFileName = string.Empty;
+
+    /// <summary>
+    /// Name of stationfile csv file.
+    /// </summary>
     public string StationFileName
     {
         get
@@ -89,6 +91,10 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     }
 
     private string _stationCountObservationFile = string.Empty;
+
+    /// <summary>
+    /// Name of StationCountObservation CCDRS csv file.
+    /// </summary>
     public string StationCountObservationFile
     {
         get
