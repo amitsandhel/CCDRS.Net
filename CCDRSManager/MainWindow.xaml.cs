@@ -27,5 +27,11 @@ namespace CCDRSManager
             // Open the window as a dialog box.
             win.ShowDialog();
         }
+
+        private void EditVehicle(object sender, RoutedEventArgs e)
+        {
+            VehicleDialog dialog = new();
+            dialog.ShowDialog();
+        }
     }
 }

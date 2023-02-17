@@ -14,17 +14,17 @@
 */
 
 using CCDRSManager.Data;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CCDRSManager;
 
 public static class Configuration
 {
     public static CCDRSManagerModelRepository CCDRSManagerModelRepository { get; private set; } =
+        new(new CCDRSContext());
+
+    /// <summary>
+    /// Initialize the VehicleRepository with the context service.
+    /// </summary>
+    public static VehicleRepository VehicleRepository { get; private set; } =
         new(new CCDRSContext());
 }

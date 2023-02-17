@@ -7,6 +7,22 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Click="RunWizard">Run CCDRS Wizard</Button>
+        <StackPanel>
+            <DockPanel Grid.Column="1">
+                <Menu>
+                    <Separator />
+                    <MenuItem Header="Vehicle">
+                        <MenuItem Header="_Edit..." Click="EditVehicle" />
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem Header="Survey">
+                        <MenuItem Header="_Insert..." />
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
+
+            <Button Click="RunWizard">Run CCDRS Wizard</Button>
+        </StackPanel>
+        
     </Grid>
 </Window>
