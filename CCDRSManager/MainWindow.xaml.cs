@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 
 namespace CCDRSManager
 {
@@ -28,9 +29,25 @@ namespace CCDRSManager
             win.ShowDialog();
         }
 
+        /// <summary>
+        /// Edit a VehicleCountType technology.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EditVehicle(object sender, RoutedEventArgs e)
         {
             VehicleDialog dialog = new();
+            dialog.ShowDialog();
+        }
+
+        /// <summary>
+        /// Add Screenline data to the database.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddScreenline(object sender, RoutedEventArgs e)
+        {
+            ScreenlineDialog dialog = new();
             dialog.ShowDialog();
         }
     }

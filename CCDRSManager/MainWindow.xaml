@@ -18,6 +18,9 @@
                     <MenuItem Header="Survey">
                         <MenuItem Header="_Insert..." />
                     </MenuItem>
+                    <MenuItem Header="Screenline">
+                        <MenuItem Header="_Insert..." Click="AddScreenline"/>
+                    </MenuItem>
                 </Menu>
             </DockPanel>
 

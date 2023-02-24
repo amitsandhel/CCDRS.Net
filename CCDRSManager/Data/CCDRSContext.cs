@@ -284,6 +284,7 @@ public partial class CCDRSContext : DbContext
             entity.HasNoKey();
 
             entity.ToTable("screenline_station");
+            entity.HasAlternateKey(c => new { c.ScreenlineId, c.StationId });
 
             entity.HasIndex(e => new { e.ScreenlineId, e.StationId }, "screenline_station_screenline_id_station_id_key")
                 .IsUnique();

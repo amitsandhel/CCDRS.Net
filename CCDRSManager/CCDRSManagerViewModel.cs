@@ -108,6 +108,26 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
+
+    private string _screenlineFileName = string.Empty;
+
+    /// <summary>
+    /// Name of screenline csv file.
+    /// </summary>
+    public string ScreenlineFileName
+    {
+        get
+        {
+            return _screenlineFileName;
+        }
+        set
+        {
+            _screenlineFileName = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScreenlineFileName)));
+        }
+
+    }
+
     /// <summary>
     /// Controls access to the CCDRS model repository.
     /// </summary>
@@ -162,5 +182,13 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddStationCountObserationData()
     {
         _ccdrsRepository.AddStationCountObservationData(StationCountObservationFile, RegionId, SurveyYear);
+    }
+
+    /// <summary>
+    /// Add Screenline data to the database.
+    /// </summary>
+    public void AddScreenlineData()
+    {
+        _ccdrsRepository.AddScreenlineData(RegionId, ScreenlineFileName);
     }
 }

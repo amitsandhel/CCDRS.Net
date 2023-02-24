@@ -13,11 +13,16 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
+
 namespace CCDRSManager.Model;
 
 /// <summary>
 /// Class that maps to the screenline_station table
 /// </summary>
+[PrimaryKey(nameof(ScreenlineId), nameof(StationId))]
 public partial class ScreenlineStation
 {
     /// <summary>

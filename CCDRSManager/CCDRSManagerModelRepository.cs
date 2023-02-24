@@ -458,6 +458,93 @@ public partial class CCDRSManagerModelRepository
     }
 
     /// <summary>
+    /// Delete all screenline and ScreenlineStation data for specified regionId.
+    /// </summary>
+    /// <param name="regionId">Primary serial key of region.</param>
+    public void DeleteScreenline(int regionId)
+    {
+        List<Screenline> dataList = _context.Screenlines.Where(s => s.RegionId == regionId).ToList();
+        _context.Screenlines.RemoveRange(dataList);
+        _context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Insert data into the screenline table.
+    /// </summary>
+    /// <param name="regionId">Primary serial key of region.</param>
+    /// <param name="screenlineData">List of data of a screenline containing screenline code, description and associated station.</param>
+    public void InsertDataIntoScreenline(int regionId, string slineCode, string slineDescription)
+    {
+        if (!_context.Screenlines.Any(s => s.RegionId == regionId && s.SlineCode == slineCode))
+        {
+            // Make a new screenline object
+            Screenline newScreenline = new()
+            {
+                RegionId = regionId,
+                SlineCode = slineCode,
+                Note = slineDescription
+            };
+            _context.Screenlines.Add(newScreenline);
+            _context.SaveChanges();
+        }
+    }
+
+    /// <summary>
+    /// Insert data into the ScreenlineStation table.
+    /// </summary>
+    /// <param name="regionId">Primary serial key of region.</param>
+    /// <param name="screenlineData">List of data of a screenline containing screenline code, description and associated station.</param>
+    public void AddScreenlineStationData(int regionId, string slineCode, string stationCode)
+    {
+        // find the Screenline object.
+        Screenline? screenline = _context.Screenlines.FirstOrDefault(s => s.RegionId == regionId && s.SlineCode == slineCode);
+
+        // Find the station object in the data.
+        Station? station = _context.Stations.FirstOrDefault(s => s.StationCode == stationCode && s.RegionId == regionId);
+
+        if (station is not null)
+        {
+            // Create a new ScreenlineStation object.
+            ScreenlineStation newScreenlineStation = new()
+            {
+                ScreenlineId = screenline.Id,
+                StationId = station.Id
+            };
+            _context.ScreenlineStations.Add(newScreenlineStation);
+            _context.SaveChanges();
+        }
+    }
+
+    /// <summary>
+    /// Parse screenline csv file and insert data into the Screenline and ScreenlineStation tables.
+    /// </summary>
+    /// <param name="regionId">Primary serial key of region.</param>
+    /// <param name="screenlineFileName">Filepath to the location of the screenline csv file.</param>
+    public void AddScreenlineData(int regionId, string screenlineFileName)
+    {
+        // Delete all the screenline data of provided region.
+        DeleteScreenline(regionId);
+
+        // read the screenline csv file
+        using var readFile = new StreamReader(screenlineFileName);
+        string? line;
+        string[] observationData;
+
+        // Loop through the remaining rows of data and insert the screenline data into the database.
+        while ((line = readFile.ReadLine()) is not null)
+        {
+            observationData = line.Split(',');
+            string slineCode = observationData[0];
+            string slineDescription = observationData[1];
+            string stationCode = observationData[2];
+            // insert data into Screenline table.
+            InsertDataIntoScreenline(regionId, slineCode, slineDescription);
+            // insert data into the ScreenlineStation table.
+            AddScreenlineStationData(regionId, slineCode, stationCode);
+        }
+    }
+
+    /// <summary>
     /// Save the changes to the context to the database when all context changes have finished.
     /// </summary>
     /// <returns></returns>
