@@ -46,7 +46,7 @@ public class VehicleCountTypeModel : INotifyPropertyChanged
     {
         Id = vehicleCountType.Id;
         Description = vehicleCountType.Description;
-        Occupancy= vehicleCountType.Occupancy;
+        Occupancy = vehicleCountType.Occupancy;
     }
     public event PropertyChangedEventHandler? PropertyChanged;
 }

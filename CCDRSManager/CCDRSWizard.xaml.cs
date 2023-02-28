@@ -14,6 +14,7 @@
 */
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -47,7 +48,7 @@ namespace CCDRSManager
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CheckSurveyExists(object sender, RoutedEventArgs e)
+        private async void CheckSurveyExists(object sender, RoutedEventArgs e)
         {
             if (DataContext is CCDRSManagerViewModel vm)
             {
@@ -58,8 +59,18 @@ namespace CCDRSManager
                    "Click yes to delete all records and no to cancel this operation", "", MessageBoxButton.YesNo);
                     if (messageBoxResult == MessageBoxResult.Yes)
                     {
-                        // Delete the survey
-                        vm.DeleteSurveyData();
+                        try
+                        {
+                            this.IsEnabled = false;
+                            vm.IsRunning = true;
+                            // Delete the survey
+                            await Task.Run(() => { vm.DeleteSurveyData();});
+                        }
+                        finally
+                        {
+                            vm.IsRunning = false;
+                            this.IsEnabled = true;
+                        }
                         MessageBox.Show(this, "Survey Data successfully deleted. Please click next to add Station data.");
                     }
                 }
@@ -100,7 +111,6 @@ namespace CCDRSManager
         private void OpenStationFileDialog(object sender, RoutedEventArgs e)
         {
             OpenFileDialog(StationFileName);
-
         }
 
         /// <summary>
@@ -118,16 +128,26 @@ namespace CCDRSManager
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AddStationData(object sender, RoutedEventArgs e)
+        private async void AddStationData(object sender, RoutedEventArgs e)
         {
             if (DataContext is CCDRSManagerViewModel vm)
             {
-                vm.AddSurveyData();
-                vm.AddStationData();
-                vm.AddSurveyStationData();
-                MessageBox.Show(this, "Successfully added survey and station data to the database.");
+                try
+                {
+                    this.IsEnabled = false;
+                    vm.IsRunning = true;
+                    await Task.Run(() => { vm.AddSurveyData();
+                                           vm.AddStationData();
+                                           vm.AddSurveyStationData();
+                                        });
+                    MessageBox.Show(this, "Successfully added survey and station data to the database.");
+                }
+                finally
+                {
+                    vm.IsRunning = false;
+                    this.IsEnabled = true;
+                }
             }
-
         }
 
         /// <summary>
@@ -135,12 +155,22 @@ namespace CCDRSManager
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AddStationCountObservationData(object sender, RoutedEventArgs e)
+        private async void AddStationCountObservationData(object sender, RoutedEventArgs e)
         {
             if (DataContext is CCDRSManagerViewModel vm)
             {
-                vm.AddStationCountObserationData();
-                MessageBox.Show(this, "Successfully added station count observation data to the database.Press Finish and close the wizard.");
+                try
+                {
+                    this.IsEnabled = false;
+                    vm.IsRunning = true;
+                    await Task.Run(() => { vm.AddStationCountObserationData();});
+                    MessageBox.Show(this, "Successfully added station count observation data to the database. Press Finish and close the wizard."); 
+                }
+                finally
+                {
+                    vm.IsRunning = false;
+                    this.IsEnabled = true;
+                }
             }
         }
     }

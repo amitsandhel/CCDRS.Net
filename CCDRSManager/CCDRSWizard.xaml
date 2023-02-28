@@ -16,11 +16,15 @@
                                    Title="Welcome to the CCDRS Survey upload Wizxard"
                                    Description="This Wizard will walk you though how to upload a survey" />
 
-            <xctk:WizardPage x:Name="Page1" PageType="Interior"
+            <xctk:WizardPage x:Name="Page1" 
+                    PageType="Interior"
                     Title="Please Select a survey region and year"
                     NextPage="{Binding ElementName=Page2}"
                     PreviousPage="{Binding ElementName=IntroPage}">
                 <StackPanel>
+                    <ProgressBar 
+                        IsIndeterminate="{Binding IsRunning}" 
+                        Minimum="0" Maximum="100" Height="20" />
                     <Label >Region</Label>
                     <ComboBox ItemsSource="{Binding Regions}" 
                                   SelectedValuePath="Id" 
@@ -37,6 +41,9 @@
             <xctk:WizardPage x:Name="Page2" PageType="Interior"
                     Title="Upload Station file of survey">
                 <StackPanel>
+                    <ProgressBar 
+                        IsIndeterminate="{Binding IsRunning}" 
+                        Minimum="0" Maximum="100"  Height="20" />
                     <Label Content="Select Station csv file" />
                     <Button  Name="OpenStationFile"
                         Content="Upload Station File"
@@ -52,6 +59,8 @@
                     Title="Please upload the stationcount csv file"
                     CanFinish="True">
                 <StackPanel>
+                    <ProgressBar IsIndeterminate="{Binding IsRunning}" 
+                                 Minimum="0" Maximum="100" Height="20" />
                     <Label Content="Select StationCount Data" />
                     <Button Name="OpenFile"
                         Content="Upload StationCount File" 

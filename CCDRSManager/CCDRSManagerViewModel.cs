@@ -15,7 +15,6 @@
 
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-
 namespace CCDRSManager;
 
 /// <summary>
@@ -108,6 +107,20 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Property of the progress bar to check if it is running or not.
+    /// </summary>
+    private bool _isRunning;
+    public bool IsRunning
+    {
+        get { return _isRunning; }
+        set
+        {
+            _isRunning = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRunning)));
+        }
+    }
+
 
     private string _screenlineFileName = string.Empty;
 
@@ -125,8 +138,9 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
             _screenlineFileName = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ScreenlineFileName)));
         }
-
     }
+
+
 
     /// <summary>
     /// Controls access to the CCDRS model repository.
