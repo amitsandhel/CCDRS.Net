@@ -11,15 +11,20 @@
         <local:CCDRSManagerViewModel />
     </Window.DataContext>
     <Grid>
-        <xctk:Wizard FinishButtonClosesWindow="True">
+        <xctk:Wizard FinishButtonClosesWindow="True" 
+                     Next="NextEventClick"
+                     Previous="Wizard_Previous">
             <xctk:WizardPage x:Name="IntroPage" 
-                                   Title="Welcome to the CCDRS Survey upload Wizxard"
-                                   Description="This Wizard will walk you though how to upload a survey" />
+                    Title="Welcome to the CCDRS Survey upload Wizxard"
+                    Description="This Wizard will walk you though how to upload a survey" >
+                <StackPanel>
+                    <TextBlock Text="The following csv files are needed: A stationcount csv file and the ccdrs observation file" />
+                </StackPanel>
+            </xctk:WizardPage>
 
             <xctk:WizardPage x:Name="Page1" 
                     PageType="Interior"
                     Title="Please Select a survey region and year"
-                    NextPage="{Binding ElementName=Page2}"
                     PreviousPage="{Binding ElementName=IntroPage}">
                 <StackPanel>
                     <ProgressBar 
@@ -35,9 +40,9 @@
                     <TextBox Name="SurveyBox" 
                      PreviewTextInput="PreviewTextInput"
                      Text="{Binding SurveyYear}" />
-                    <Button Name="CheckSurvey" Click="CheckSurveyExists" Content="Check Survey Exists" />
                 </StackPanel>
             </xctk:WizardPage>
+            
             <xctk:WizardPage x:Name="Page2" PageType="Interior"
                     Title="Upload Station file of survey">
                 <StackPanel>
@@ -49,15 +54,13 @@
                         Content="Upload Station File"
                         Click="OpenStationFileDialog"/>
                     <TextBox Name="StationFileName"
-                        Text="{Binding Path=StationFileName, UpdateSourceTrigger=PropertyChanged}"
-                        />
-                    <Button Click="AddStationData" Content="Add Station Data" />
+                        Text="{Binding Path=StationFileName, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </xctk:WizardPage>
 
-            <xctk:WizardPage x:Name="LastPage" PageType="Interior"
+            <xctk:WizardPage x:Name="Page3" PageType="Interior"
                     Title="Please upload the stationcount csv file"
-                    CanFinish="True">
+                              BackButtonVisibility="Hidden">
                 <StackPanel>
                     <ProgressBar IsIndeterminate="{Binding IsRunning}" 
                                  Minimum="0" Maximum="100" Height="20" />
@@ -67,9 +70,18 @@
                         Click="OpenStationCountFile"/>
                     <TextBox Name="StationCountObservationFile" 
                          Text="{Binding Path=StationCountObservationFile, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Button Click="AddStationCountObservationData" Content="Add StationCount Observation Data" />
                 </StackPanel>
             </xctk:WizardPage>
+
+            <xctk:WizardPage x:Name="LastPage" PageType="Interior"
+                    Title="Please upload the stationcount csv file"
+                    CanFinish="True"  BackButtonVisibility="Hidden">
+                <StackPanel>
+                    <ProgressBar IsIndeterminate="{Binding IsRunning}" 
+                                 Minimum="0" Maximum="100" Height="20" />
+                </StackPanel>
+            </xctk:WizardPage>
+            
         </xctk:Wizard>
     </Grid>
 </Window>

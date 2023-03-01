@@ -16,16 +16,33 @@
                     </MenuItem>
                     <Separator />
                     <MenuItem Header="Survey">
-                        <MenuItem Header="_Insert..." />
+                        <MenuItem Header="_Upload..." Click="RunWizard" />
+                        <MenuItem Header="_Delete..." />
                     </MenuItem>
                     <MenuItem Header="Screenline">
-                        <MenuItem Header="_Insert..." Click="AddScreenline"/>
+                        <MenuItem Header="_Upload..." Click="AddScreenline"/>
                     </MenuItem>
                 </Menu>
             </DockPanel>
 
-            <Button Click="RunWizard">Run CCDRS Wizard</Button>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="10" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="20" />
+                </Grid.RowDefinitions>
+                <Button Height="150" Grid.Column="1" Grid.Row="1" Click="RunWizard">Upload Survey</Button>
+                <Button Height="150" Grid.Column="2" Grid.Row="1" >Delete Survey</Button>
+                <Button Height="150" Grid.Column="1" Grid.Row="2" Click="EditVehicle">Edit Vehicle</Button>
+                <Button Height="150" Grid.Column="2" Grid.Row="2" Click="AddScreenline">Upload Screenline</Button>
+            </Grid>
         </StackPanel>
-        
     </Grid>
 </Window>

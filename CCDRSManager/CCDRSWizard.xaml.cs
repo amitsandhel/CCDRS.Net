@@ -46,40 +46,33 @@ namespace CCDRSManager
         /// <summary>
         /// Method to check if the survey data exists in the database.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private async void CheckSurveyExists(object sender, RoutedEventArgs e)
+        /// <param name="vm">CCDRSManagerViewModel</param>
+        /// <returns>return true if data successfully uploaded.</returns>
+        private async Task<bool> CheckSurveyExists(CCDRSManagerViewModel vm)
         {
-            if (DataContext is CCDRSManagerViewModel vm)
+            if (vm.CheckSurveyExists())
             {
-                if (vm.CheckSurveyExists())
+                // If the user clicks the yes button on the message box delete the survey data.
+                System.Windows.MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show(this, "This data already exists in the database. We will delete all records " +
+               "Click yes to delete all records and no to cancel this operation", "", MessageBoxButton.YesNo);
+                if (messageBoxResult == MessageBoxResult.Yes)
                 {
-                    // If the user clicks the yes button on the message box delete the survey data.
-                    MessageBoxResult messageBoxResult = MessageBox.Show(this, "This data already exists in the database. We will delete all records " +
-                   "Click yes to delete all records and no to cancel this operation", "", MessageBoxButton.YesNo);
-                    if (messageBoxResult == MessageBoxResult.Yes)
-                    {
-                        try
-                        {
-                            this.IsEnabled = false;
-                            vm.IsRunning = true;
-                            // Delete the survey
-                            await Task.Run(() => { vm.DeleteSurveyData();});
-                        }
-                        finally
-                        {
-                            vm.IsRunning = false;
-                            this.IsEnabled = true;
-                        }
-                        MessageBox.Show(this, "Survey Data successfully deleted. Please click next to add Station data.");
-                    }
+                    // Delete the survey
+                    await Task.Run(() => { vm.DeleteSurveyData(); });
+                    System.Windows.MessageBox.Show(this, "Survey Data successfully deleted. Please click next to add Station data.");
                 }
                 else
                 {
-                    MessageBox.Show(this, "No duplicate survey data was discovered in the database " +
-                        "Click next to add station data");
+                    // If the user doesn't want to continue abort.
+                    return false;
                 }
             }
+            else
+            {
+                System.Windows.MessageBox.Show(this, "No duplicate survey data was discovered in the database " +
+                    "Click next to add station data");
+            }
+            return true;
         }
 
         /// <summary>
@@ -101,7 +94,6 @@ namespace CCDRSManager
                 nameOfTextbox.Text = filename;
             }
         }
-
 
         /// <summary>
         /// Open the station file dialog window to upload a station csv file.
@@ -126,21 +118,68 @@ namespace CCDRSManager
         /// <summary>
         /// Add the Station Data to the database.
         /// </summary>
+        /// <param name="vm">CCDRSManagerViewModel</param>
+        /// <returns>return true if data successfully uploaded.</returns>
+        private async Task<bool> AddStationData(CCDRSManagerViewModel vm)
+        {
+            await Task.Run(() =>
+            {
+                vm.AddSurveyData();
+                vm.AddStationData();
+                vm.AddSurveyStationData();
+            });
+            System.Windows.MessageBox.Show(this, "Successfully added survey and station data to the database.");
+            return true;
+        }
+
+        /// <summary>
+        /// Add StationCountObservation data to the database.
+        /// </summary>
+        /// <param name="vm">CCDRSManagerViewModel</param>
+        /// <returns>return true if data successfully uploaded.</returns>
+        private async Task<bool> AddStationCountObservationData(CCDRSManagerViewModel vm)
+        {
+            await Task.Run(() => { vm.AddStationCountObserationData(); });
+            System.Windows.MessageBox.Show(this, "Successfully added station count observation data to the database. Press Finish and close the wizard.");
+            return true;
+        }
+
+        /// <summary>
+        /// Method that gets the current page of the wizard and executes the appropriate use case when
+        /// the next button is clicked.
+        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void AddStationData(object sender, RoutedEventArgs e)
+        private async void NextEventClick(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
         {
             if (DataContext is CCDRSManagerViewModel vm)
             {
+                async Task<bool> RunPageLogic()
+                {
+                    switch (vm.CurrentSurveyStep)
+                    {
+                        case CCDRSManagerViewModel.ImportSurveyStep.IntroPage:
+                            return true;
+                        case CCDRSManagerViewModel.ImportSurveyStep.Page1:
+                            return await CheckSurveyExists(vm);
+                        case CCDRSManagerViewModel.ImportSurveyStep.Page2:
+                            return await AddStationData(vm);
+                        case CCDRSManagerViewModel.ImportSurveyStep.Page3:
+                            return await AddStationCountObservationData(vm);
+                        case CCDRSManagerViewModel.ImportSurveyStep.LastPage:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }
                 try
                 {
                     this.IsEnabled = false;
                     vm.IsRunning = true;
-                    await Task.Run(() => { vm.AddSurveyData();
-                                           vm.AddStationData();
-                                           vm.AddSurveyStationData();
-                                        });
-                    MessageBox.Show(this, "Successfully added survey and station data to the database.");
+                    if (await RunPageLogic())
+                    {
+                        vm.GoToNextStep();
+                    }
                 }
                 finally
                 {
@@ -151,27 +190,17 @@ namespace CCDRSManager
         }
 
         /// <summary>
-        /// Add StationCountObservation data to the database.
+        /// Method to get the step when the previous button is clicked.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void AddStationCountObservationData(object sender, RoutedEventArgs e)
+        private void Wizard_Previous(object sender, Xceed.Wpf.Toolkit.Core.CancelRoutedEventArgs e)
         {
             if (DataContext is CCDRSManagerViewModel vm)
             {
-                try
-                {
-                    this.IsEnabled = false;
-                    vm.IsRunning = true;
-                    await Task.Run(() => { vm.AddStationCountObserationData();});
-                    MessageBox.Show(this, "Successfully added station count observation data to the database. Press Finish and close the wizard."); 
-                }
-                finally
-                {
-                    vm.IsRunning = false;
-                    this.IsEnabled = true;
-                }
+                vm.GoToPreviousStep();
             }
+
         }
     }
 }

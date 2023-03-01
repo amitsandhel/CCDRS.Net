@@ -13,8 +13,10 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+
 namespace CCDRSManager;
 
 /// <summary>
@@ -121,7 +123,6 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
-
     private string _screenlineFileName = string.Empty;
 
     /// <summary>
@@ -140,7 +141,34 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Enum of all the steps to upload a survey.
+    /// </summary>
+    public enum ImportSurveyStep
+    {
+        IntroPage = 0,
+        Page1 = 1,
+        Page2 = 2,
+        Page3 = 3,
+        LastPage = 4
+    }
 
+    private ImportSurveyStep _currentSurveyStep;
+    /// <summary>
+    /// Get the current page the wizard is on when the next button is clicked.
+    /// </summary>
+    public ImportSurveyStep CurrentSurveyStep
+    {
+        get
+        {
+            return _currentSurveyStep;
+        }
+        set
+        {
+            _currentSurveyStep = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSurveyStep)));
+        }
+    }
 
     /// <summary>
     /// Controls access to the CCDRS model repository.
@@ -204,5 +232,27 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddScreenlineData()
     {
         _ccdrsRepository.AddScreenlineData(RegionId, ScreenlineFileName);
+    }
+
+    /// <summary>
+    /// Increment the counter to determine the next step to execute.
+    /// </summary>
+    internal void GoToNextStep()
+    {
+        if (CurrentSurveyStep != ImportSurveyStep.LastPage)
+        {
+            CurrentSurveyStep = (ImportSurveyStep)((int)CurrentSurveyStep + 1);
+        }
+    }
+
+    /// <summary>
+    /// Decrement the counter to return to the previous step.
+    /// </summary>
+    internal void GoToPreviousStep()
+    {
+        if (CurrentSurveyStep != ImportSurveyStep.IntroPage)
+        {
+            CurrentSurveyStep = (ImportSurveyStep)((int)CurrentSurveyStep - 1);
+        }
     }
 }

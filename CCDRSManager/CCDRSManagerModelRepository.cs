@@ -367,7 +367,7 @@ public partial class CCDRSManagerModelRepository
     /// <param name="regionId">Primary serial key of region.</param>
     /// <param name="surveyYear">Year of survey e.g.2016.</param>
     /// <exception cref="Exception"></exception>
-    public void AddStationCountObservationData(string stationCountObservationFile, int regionId, int surveyYear) //, Func<string, bool>? checkIfAdd = null)
+    public void AddStationCountObservationData(string stationCountObservationFile, int regionId, int surveyYear)
     {
         // extract the header of the ccdrs file.
         string[] headerLine;

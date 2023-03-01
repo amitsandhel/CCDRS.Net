@@ -25,7 +25,7 @@ namespace CCDRSManager;
 public class VehicleViewModel : INotifyPropertyChanged
 {
     private readonly VehicleRepository _vehicleRepository = Configuration.VehicleRepository;
-    
+
     /// <summary>
     /// Collection of all VehicleCountType objects.
     /// </summary>
