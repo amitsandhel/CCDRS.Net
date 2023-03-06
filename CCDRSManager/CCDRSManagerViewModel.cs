@@ -16,6 +16,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using static System.Net.Mime.MediaTypeNames;
+using System.Numerics;
 
 namespace CCDRSManager;
 
@@ -141,32 +143,40 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Enum of all the steps to upload a survey.
-    /// </summary>
-    public enum ImportSurveyStep
-    {
-        IntroPage = 0,
-        Page1 = 1,
-        Page2 = 2,
-        Page3 = 3,
-        LastPage = 4
-    }
+    private string _textMessage;
 
-    private ImportSurveyStep _currentSurveyStep;
     /// <summary>
-    /// Get the current page the wizard is on when the next button is clicked.
+    /// TextMessage property to display updates and error messages to the user.
     /// </summary>
-    public ImportSurveyStep CurrentSurveyStep
+    public string TextMessage
     {
         get
         {
-            return _currentSurveyStep;
+            return _textMessage;
+        }
+        set 
+        { 
+            _textMessage = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextMessage)));
+        }
+    }
+
+    private string _textColour;
+
+    /// <summary>
+    /// Collour property of textblock to display when user is updated with progress. Green for success
+    /// and red for errors.
+    /// </summary>
+    public string TextColour
+    {
+        get
+        {
+            return _textColour;
         }
         set
         {
-            _currentSurveyStep = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentSurveyStep)));
+            _textColour = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextColour)));
         }
     }
 
@@ -192,6 +202,8 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void DeleteSurveyData()
     {
         _ccdrsRepository.DeleteSurveyData(RegionId, SurveyYear);
+        TextColour = "green";
+        TextMessage = "Survey Data successfully deleted. Adding Survey Data.";
     }
 
     /// <summary>
@@ -200,6 +212,8 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddSurveyData()
     {
         _ccdrsRepository.AddSurveyData(RegionId, SurveyYear);
+        TextColour = "green";
+        TextMessage = "Survey data successfully Added";
     }
 
     /// <summary>
@@ -208,6 +222,8 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddStationData()
     {
         _ccdrsRepository.AddStationData(StationFileName, RegionId);
+        TextColour = "green";
+        TextMessage = "Station data successfully Added";
     }
 
     /// <summary>
@@ -216,6 +232,8 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddSurveyStationData()
     {
         _ccdrsRepository.AddSurveyStationData(RegionId, SurveyYear);
+        TextColour = "green";
+        TextMessage = "Survey Station data successfully Added";
     }
 
     /// <summary>
@@ -223,7 +241,11 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     /// </summary>
     public void AddStationCountObserationData()
     {
+        TextColour = "green";
+        TextMessage = "Uploading StationCount data please wait";
         _ccdrsRepository.AddStationCountObservationData(StationCountObservationFile, RegionId, SurveyYear);
+        TextColour = "green";
+        TextMessage = "Success";
     }
 
     /// <summary>
@@ -232,27 +254,5 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddScreenlineData()
     {
         _ccdrsRepository.AddScreenlineData(RegionId, ScreenlineFileName);
-    }
-
-    /// <summary>
-    /// Increment the counter to determine the next step to execute.
-    /// </summary>
-    internal void GoToNextStep()
-    {
-        if (CurrentSurveyStep != ImportSurveyStep.LastPage)
-        {
-            CurrentSurveyStep = (ImportSurveyStep)((int)CurrentSurveyStep + 1);
-        }
-    }
-
-    /// <summary>
-    /// Decrement the counter to return to the previous step.
-    /// </summary>
-    internal void GoToPreviousStep()
-    {
-        if (CurrentSurveyStep != ImportSurveyStep.IntroPage)
-        {
-            CurrentSurveyStep = (ImportSurveyStep)((int)CurrentSurveyStep - 1);
-        }
     }
 }
