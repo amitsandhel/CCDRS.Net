@@ -143,7 +143,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
-    private string _textMessage;
+    private string _textMessage = string.Empty;
 
     /// <summary>
     /// TextMessage property to display updates and error messages to the user.
@@ -161,10 +161,10 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
-    private string _textColour;
-
+    private string _textColour = "Black";
+    
     /// <summary>
-    /// Collour property of textblock to display when user is updated with progress. Green for success
+    /// Colour property of textblock to display when user is updated with progress. Green for success
     /// and red for errors.
     /// </summary>
     public string TextColour
@@ -202,8 +202,6 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void DeleteSurveyData()
     {
         _ccdrsRepository.DeleteSurveyData(RegionId, SurveyYear);
-        TextColour = "green";
-        TextMessage = "Survey Data successfully deleted. Adding Survey Data.";
     }
 
     /// <summary>
@@ -212,8 +210,6 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddSurveyData()
     {
         _ccdrsRepository.AddSurveyData(RegionId, SurveyYear);
-        TextColour = "green";
-        TextMessage = "Survey data successfully Added";
     }
 
     /// <summary>
@@ -222,8 +218,6 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddStationData()
     {
         _ccdrsRepository.AddStationData(StationFileName, RegionId);
-        TextColour = "green";
-        TextMessage = "Station data successfully Added";
     }
 
     /// <summary>
@@ -232,8 +226,6 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddSurveyStationData()
     {
         _ccdrsRepository.AddSurveyStationData(RegionId, SurveyYear);
-        TextColour = "green";
-        TextMessage = "Survey Station data successfully Added";
     }
 
     /// <summary>
@@ -241,11 +233,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     /// </summary>
     public void AddStationCountObserationData()
     {
-        TextColour = "green";
-        TextMessage = "Uploading StationCount data please wait";
         _ccdrsRepository.AddStationCountObservationData(StationCountObservationFile, RegionId, SurveyYear);
-        TextColour = "green";
-        TextMessage = "Success";
     }
 
     /// <summary>
@@ -254,5 +242,16 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void AddScreenlineData()
     {
         _ccdrsRepository.AddScreenlineData(RegionId, ScreenlineFileName);
+    }
+
+    /// <summary>
+    /// Add the colour and text to the textblock data
+    /// </summary>
+    /// <param name="colour">The colour of the text e.g. red.</param>
+    /// <param name="message">The message to display and write.</param>
+    public void SetTextBlockData(string colour, string message)
+    {
+        TextColour = colour;
+        TextMessage = message;
     }
 }

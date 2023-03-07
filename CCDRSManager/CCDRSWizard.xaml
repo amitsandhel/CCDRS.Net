@@ -32,7 +32,7 @@
                               SelectedValue="{Binding RegionId}"
                                   IsEditable="False"/>
                     <Label>Survey</Label>
-                    <TextBox Name="SurveyBox" 
+                    <TextBox x:Name="SurveyBox" 
                      PreviewTextInput="PreviewTextInput"
                      Text="{Binding SurveyYear}" />
                 </StackPanel>
@@ -42,10 +42,10 @@
                     Title="Upload Station file of survey">
                 <StackPanel>
                     <Label Content="Select Station csv file" />
-                    <Button  Name="OpenStationFile"
+                    <Button x:Name="OpenStationFile"
                         Content="Upload Station File"
                         Click="OpenStationFileDialog"/>
-                    <TextBox Name="StationFileName"
+                    <TextBox x:Name="StationFileName"
                         Text="{Binding Path=StationFileName, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </xctk:WizardPage>
@@ -56,14 +56,16 @@
                     <ProgressBar IsIndeterminate="{Binding IsRunning}" 
                                  Minimum="0" Maximum="100" Height="20" />
                     <Label Content="Select StationCount Data" />
-                    <Button Name="OpenFile"
+                    <Button x:Name="OpenFile"
                         Content="Upload StationCount File" 
                         Click="OpenStationCountFile"/>
-                    <TextBox Name="StationCountObservationFile" 
+                    <TextBox x:Name="StationCountObservationFile" 
                          Text="{Binding Path=StationCountObservationFile, UpdateSourceTrigger=PropertyChanged}"/>
                     <Button Height="100" Click="Submit">Add Survey</Button>
-                    <TextBlock Name="errorMessage" Foreground="{Binding TextColour}" 
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  TextWrapping="Wrap" Name="errorMessage" Foreground="{Binding TextColour}" 
                                FontWeight="Bold" Text="{Binding TextMessage}" />
+                    </ScrollViewer>
                 </StackPanel>
             </xctk:WizardPage>
         </xctk:Wizard>

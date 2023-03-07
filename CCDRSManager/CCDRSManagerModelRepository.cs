@@ -144,12 +144,22 @@ public partial class CCDRSManagerModelRepository
             string? line;
             string[] row;
             readFile.ReadLine();
+            int lineNumber = 0;
+
             // loop through the line
             while ((line = readFile.ReadLine()) is not null)
             {
-                row = line.Split(';');
-                // add station data
-                AddStationIfNotExists(regionId, row[0], row[1]);
+                lineNumber++;
+                try
+                {
+                    row = line.Split(';');
+                    // add station data
+                    AddStationIfNotExists(regionId, row[0], row[1]);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Corrupt data in file {stationFileName} on line {lineNumber} \n" + ex);
+                }
             }
         };
     }
@@ -377,35 +387,41 @@ public partial class CCDRSManagerModelRepository
         // read the station_count_observation ccdrs csv file
         using (var readFile = new StreamReader(stationCountObservationFile))
         {
-            string? line;
-            string[] observationData;
-
-            // Extract the header of the csv file which contains the columns of vehicle types.
-            headerLine = readFile.ReadLine()?.Split(',') ?? throw new Exception("No header file found");
-
-            // Loop through header to check if the vehicle exists in the database or not
-            foreach (string technology in headerLine)
+            int lineNumber = 0;
+            try
             {
-                // Ignore if the header value is labeled station or time 
-                if (technology == "station" || technology == "time")
+                string? line;
+                string[] observationData;
+
+                // Extract the header of the csv file which contains the columns of vehicle types.
+                headerLine = readFile.ReadLine()?.Split(',') ?? throw new Exception("No header file found");
+
+                // Loop through header to check if the vehicle exists in the database or not
+                foreach (string technology in headerLine)
                 {
-                    continue;
+                    if (!(technology == "station" || technology == "time"))
+                    {
+                        // get the VehicleCountTypeObject and add to the list.
+                        VehicleCountType result = GetVehicleCountTypeObject(technology);
+                        vehicleCountTypeList.Add(result);
+                    }
                 }
-                else
+
+                // Loop through the remaining rows of data and insert the observation data into the database.
+                while ((line = readFile.ReadLine()) is not null)
                 {
-                    // get the VehicleCountTypeObject and add to the list.
-                    VehicleCountType result = GetVehicleCountTypeObject(technology);
-                    vehicleCountTypeList.Add(result);
+
+                    lineNumber++;
+                    observationData = line.Split(',');
+                    // check and add the station data
+                    InsertDataIntoStationCountContext(vehicleCountTypeList, observationData, regionId, surveyYear);
                 }
             }
-
-            // Loop through the remaining rows of data and insert the observation data into the database.
-            while ((line = readFile.ReadLine()) is not null)
+            catch (Exception ex)
             {
-                observationData = line.Split(',');
-                // check and add the station data
-                InsertDataIntoStationCountContext(vehicleCountTypeList, observationData, regionId, surveyYear);
+                throw new Exception($"Corrupt data in file {stationCountObservationFile} on line {lineNumber} \n" + ex);
             }
+            
         }
         // Update the individaul_categories table to display the correct technologies on webpage.
         UpdateIndividualCategoriesTable(regionId, surveyYear, vehicleCountTypeList);
@@ -548,9 +564,9 @@ public partial class CCDRSManagerModelRepository
     /// Save the changes to the context to the database when all context changes have finished.
     /// </summary>
     /// <returns></returns>
-    public Task SaveData()
+    public void SaveData()
     {
-        return _context.SaveChangesAsync();
+        _context.SaveChanges();
     }
 
     [GeneratedRegex("([a-zA-Z]+)(\\d+)")]
