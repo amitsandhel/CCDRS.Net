@@ -37,7 +37,6 @@ public partial class CCDRSContext : DbContext
         optionsBuilder.UseNpgsql(ConfigurationManager.ConnectionStrings["TestDBContext"].ConnectionString);
     }
 
-
     /// <summary>
     /// Allow pages to access the Direction class as a service.
     /// </summary>
@@ -133,7 +132,7 @@ public partial class CCDRSContext : DbContext
 
             entity.HasOne(d => d.Region).WithMany(p => p.Surveys)
                 .HasForeignKey(d => d.RegionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("survey_region_id_fkey");
         });
 
@@ -165,7 +164,7 @@ public partial class CCDRSContext : DbContext
 
             entity.HasOne(d => d.Vehicle).WithMany(p => p.VehicleCountTypes)
                 .HasForeignKey(d => d.VehicleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("vehicle_count_type_vehicle_id_fkey");
         });
 
@@ -185,7 +184,7 @@ public partial class CCDRSContext : DbContext
 
             entity.HasOne(d => d.Region).WithMany(p => p.Screenlines)
                 .HasForeignKey(d => d.RegionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("screenline_region_id_fkey");
         });
 
@@ -209,7 +208,7 @@ public partial class CCDRSContext : DbContext
 
             entity.HasOne(d => d.Region).WithMany(p => p.Stations)
                 .HasForeignKey(d => d.RegionId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("station_region_id_fkey");
         });
 
@@ -228,12 +227,12 @@ public partial class CCDRSContext : DbContext
 
             entity.HasOne(d => d.Station).WithMany(p => p.SurveyStations)
                 .HasForeignKey(d => d.StationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("survey_station_station_id_fkey");
 
             entity.HasOne(d => d.Survey).WithMany(p => p.SurveyStations)
                 .HasForeignKey(d => d.SurveyId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("survey_station_survey_id_fkey");
         });
 
@@ -251,12 +250,12 @@ public partial class CCDRSContext : DbContext
 
             entity.HasOne(d => d.SurveyStation).WithMany(p => p.StationCountObservations)
                 .HasForeignKey(d => d.SurveyStationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("station_count_observation_survey_station_id_fkey");
 
             entity.HasOne(d => d.VehicleCountType).WithMany(p => p.StationCountObservations)
                 .HasForeignKey(d => d.VehicleCountTypeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("station_count_observation_vehicle_count_type_id_fkey");
         });
 

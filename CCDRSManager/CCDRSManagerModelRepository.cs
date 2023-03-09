@@ -15,13 +15,13 @@
 
 using CCDRSManager.Data;
 using CCDRSManager.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CCDRSManager;
 
@@ -61,7 +61,7 @@ public partial class CCDRSManagerModelRepository
                    && surveys.Year == surveyYear
                 select
                   surveys
-                ).Any();
+                ).AsNoTracking().Any();
     }
 
     /// <summary>
@@ -80,7 +80,8 @@ public partial class CCDRSManagerModelRepository
                         select
                             surveys).ToList();
         _context.Surveys.RemoveRange(dataList);
-        _context.SaveChanges();
+        // Save the context to the database.
+        Save();
     }
 
     /// <summary>
@@ -97,7 +98,8 @@ public partial class CCDRSManagerModelRepository
             Year = surveyYear
         };
         _context.Surveys.Add(survey);
-        _context.SaveChanges();
+        // Save the context to the database.
+        Save();
     }
 
     /// <summary>
@@ -127,7 +129,8 @@ public partial class CCDRSManagerModelRepository
                 Description = stationDescription
             };
             _context.Stations.Add(newStation);
-            _context.SaveChanges();
+            // Save the context to the database.
+            Save();
         }
     }
 
@@ -199,8 +202,8 @@ public partial class CCDRSManagerModelRepository
             };
             _context.SurveyStations.Add(ss);
         }
-        //save the context to the database.
-        _context.SaveChanges();
+        // Save the context to the database.
+        Save();
     }
 
     /// <summary>
@@ -236,7 +239,8 @@ public partial class CCDRSManagerModelRepository
             Name = vehicleName
         };
         _context.Vehicles.Add(vehicle);
-        _context.SaveChanges();
+        //_context.SaveChanges();
+        Save();
         return vehicle;
     }
 
@@ -257,7 +261,8 @@ public partial class CCDRSManagerModelRepository
             VehicleId = vehicleId
         };
         _context.VehicleCountTypes.Add(vehicleCountType);
-        _context.SaveChanges();
+        //_context.SaveChanges();
+        Save();
         return vehicleCountType;
     }
 
@@ -421,13 +426,13 @@ public partial class CCDRSManagerModelRepository
             {
                 throw new Exception($"Corrupt data in file {stationCountObservationFile} on line {lineNumber} \n" + ex);
             }
-            
+
         }
         // Update the individaul_categories table to display the correct technologies on webpage.
         UpdateIndividualCategoriesTable(regionId, surveyYear, vehicleCountTypeList);
 
-        // Save the changes to the database.
-        SaveData();
+        // Save the context to the database.
+        Save();
     }
 
     /// <summary>
@@ -451,7 +456,9 @@ public partial class CCDRSManagerModelRepository
                                                          select
                                                              individualcategories).ToList();
         _context.IndividualCategories.RemoveRange(individualCategories);
-        _context.SaveChanges();
+
+        // Save the context to the database.
+        Save();
 
         // Iterate over the new vehicle_count_type list and build a new set of individual categories
         foreach (VehicleCountType vehicleCountType in vehicleCountTypes)
@@ -481,7 +488,8 @@ public partial class CCDRSManagerModelRepository
     {
         List<Screenline> dataList = _context.Screenlines.Where(s => s.RegionId == regionId).ToList();
         _context.Screenlines.RemoveRange(dataList);
-        _context.SaveChanges();
+        // Save the context to the database.
+        Save();
     }
 
     /// <summary>
@@ -501,7 +509,8 @@ public partial class CCDRSManagerModelRepository
                 Note = slineDescription
             };
             _context.Screenlines.Add(newScreenline);
-            _context.SaveChanges();
+            // Save the context to the database.
+            Save();
         }
     }
 
@@ -527,7 +536,8 @@ public partial class CCDRSManagerModelRepository
                 StationId = station.Id
             };
             _context.ScreenlineStations.Add(newScreenlineStation);
-            _context.SaveChanges();
+            // Save the context to the database.
+            Save();
         }
     }
 
@@ -563,10 +573,18 @@ public partial class CCDRSManagerModelRepository
     /// <summary>
     /// Save the changes to the context to the database when all context changes have finished.
     /// </summary>
-    /// <returns></returns>
-    public void SaveData()
+    public void Save()
     {
         _context.SaveChanges();
+        ClearChangeTracker();
+    }
+
+    /// <summary>
+    /// Clear all tracked entities since we can't dispose the context at the end of each unit of work.
+    /// </summary>
+    public void ClearChangeTracker()
+    {
+        _context.ChangeTracker.Clear();
     }
 
     [GeneratedRegex("([a-zA-Z]+)(\\d+)")]

@@ -45,41 +45,6 @@ public partial class CCDRSWizard : Window
     }
 
     /// <summary>
-    /// Method to check if the survey data exists in the database.
-    /// </summary>
-    /// <param name="vm">CCDRSManagerViewModel</param>
-    /// <returns>return true if data successfully uploaded.</returns>
-    private async Task<bool> CheckSurveyExists(CCDRSManagerViewModel vm)
-    {
-        if (vm.CheckSurveyExists())
-        {
-            // If the user clicks the yes button on the message box delete the survey data.
-            System.Windows.MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show(this, "This data already exists in the database. We will delete all records " +
-           "Click yes to delete all records and no to cancel this operation", "", MessageBoxButton.YesNo);
-            if (messageBoxResult == MessageBoxResult.Yes)
-            {
-                // Delete the survey
-                await Task.Run(() => 
-                { 
-                    vm.DeleteSurveyData();
-                    vm.SetTextBlockData("green", "Survey Data successfully deleted. Adding Survey Data.");
-                });
-            }
-            else
-            {
-                // If the user doesn't want to continue abort.
-                return false;
-            }
-        }
-        else
-        {
-            System.Windows.MessageBox.Show(this, "No duplicate survey data was discovered in the database " +
-                "Click next to add station data");
-        }
-        return true;
-    }
-
-    /// <summary>
     /// Generic method to open a window dialog box to upload a file. 
     /// </summary>
     /// <param name="nameOfTextbox">Name of Textbox control.</param>
@@ -120,42 +85,6 @@ public partial class CCDRSWizard : Window
     }
 
     /// <summary>
-    /// Add the Station Data to the database.
-    /// </summary>
-    /// <param name="vm">CCDRSManagerViewModel</param>
-    /// <returns>return true if data successfully uploaded.</returns>
-    private async Task<bool> AddStationData(CCDRSManagerViewModel vm)
-    {
-        await Task.Run(() =>
-        {
-            vm.AddSurveyData();
-            vm.SetTextBlockData("green", "Survey data successfully Added. Now adding Station Data");
-            vm.AddStationData();
-            vm.SetTextBlockData("green", "Station data successfully Added");
-            vm.AddSurveyStationData();
-            vm.SetTextBlockData("green", "Survey Station data successfully Added");
-        });
-        return true;
-    }
-
-    /// <summary>
-    /// Add StationCountObservation data to the database.
-    /// </summary>
-    /// <param name="vm">CCDRSManagerViewModel</param>
-    /// <returns>return true if data successfully uploaded.</returns>
-    private async Task<bool> AddStationCountObservationData(CCDRSManagerViewModel vm)
-    {
-        await Task.Run(() => 
-        {
-            vm.SetTextBlockData("green", "Uploading StationCount data please wait"); 
-            vm.AddStationCountObserationData();
-            vm.SetTextBlockData("green", "Success and finished !");
-        });
-        System.Windows.MessageBox.Show(this, "Successfully added station count observation data to the database. Press Finish and close the wizard.");
-        return true;
-    }
-
-    /// <summary>
     /// Submit button which runs all database operations.
     /// </summary>
     /// <param name="sender"></param>
@@ -168,27 +97,9 @@ public partial class CCDRSWizard : Window
             Page3.CanSelectPreviousPage = false;
             Page3.CanSelectNextPage = false;
             Page3.CanFinish = false;
-
-            //Run the progress bar.
-            vm.IsRunning = true;
-            try
-            {
-                await CheckSurveyExists(vm);
-                await AddStationData(vm);
-                await AddStationCountObservationData(vm);
-            }
-            catch (Exception ex)
-            {
-                vm.SetTextBlockData("red", ex.Message);
-            }
-
-
-            // close the progress bar.
-            vm.IsRunning = false;
-
+            await vm.StepsToRunAsync();
             // Activate the finish button for user to close the wizard.
             Page3.CanFinish = true;
-
         }
     }
 }

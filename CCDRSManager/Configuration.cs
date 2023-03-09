@@ -16,7 +16,6 @@
 using CCDRSManager.Data;
 
 namespace CCDRSManager;
-
 public static class Configuration
 {
     public static CCDRSManagerModelRepository CCDRSManagerModelRepository { get; private set; } =

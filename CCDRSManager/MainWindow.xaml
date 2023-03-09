@@ -39,7 +39,7 @@
                     <RowDefinition Height="20" />
                 </Grid.RowDefinitions>
                 <Button Height="150" Grid.Column="1" Grid.Row="1" Click="RunWizard">Upload Survey</Button>
-                <Button Height="150" Grid.Column="2" Grid.Row="1" >Delete Survey</Button>
+                <Button Height="150" Grid.Column="2" Grid.Row="1">Delete Survey</Button>
                 <Button Height="150" Grid.Column="1" Grid.Row="2" Click="EditVehicle">Edit Vehicle</Button>
                 <Button Height="150" Grid.Column="2" Grid.Row="2" Click="AddScreenline">Upload Screenline</Button>
             </Grid>

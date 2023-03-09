@@ -16,8 +16,8 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using static System.Net.Mime.MediaTypeNames;
-using System.Numerics;
+using System.Runtime.ConstrainedExecution;
+using System.Threading.Tasks;
 
 namespace CCDRSManager;
 
@@ -154,15 +154,15 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         {
             return _textMessage;
         }
-        set 
-        { 
+        set
+        {
             _textMessage = value;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(TextMessage)));
         }
     }
 
     private string _textColour = "Black";
-    
+
     /// <summary>
     /// Colour property of textblock to display when user is updated with progress. Green for success
     /// and red for errors.
@@ -186,6 +186,14 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public CCDRSManagerViewModel()
     {
         Regions = _ccdrsRepository.Regions;
+    }
+
+    /// <summary>
+    /// Method to clear the clear all tracked entities before we begin any unit of work.
+    /// </summary>
+    public void ClearChangeTracker()
+    {
+        _ccdrsRepository.ClearChangeTracker();
     }
 
     /// <summary>
@@ -253,5 +261,47 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     {
         TextColour = colour;
         TextMessage = message;
+    }
+
+    /// <summary>
+    /// The Steps to run to add survey data to the database. 
+    /// </summary>
+    /// <returns></returns>
+    public Task StepsToRunAsync()
+    {
+        return Task.Run(() =>
+        {
+            try
+            {
+                // Turn on the progress bar.
+                IsRunning = true;
+                ClearChangeTracker();
+                SetTextBlockData("green", "Deleting survey data if exists please wait...");
+                DeleteSurveyData();
+                SetTextBlockData("green", "Successfully deleted survey data.");
+                SetTextBlockData("green", "Attempting to add survey data to the database please wait...");
+                AddSurveyData();
+                SetTextBlockData("green", "Successfully added survey data");
+                SetTextBlockData("green", "Attempting to add Station Data please wait...");
+                AddStationData();
+                SetTextBlockData("green", "Successfully added station data");
+                SetTextBlockData("green", "Attempting to add surveystation data to the database please wait...");
+                AddSurveyStationData();
+                SetTextBlockData("green", "Successfully added surveystation data");
+                SetTextBlockData("green", "Attempting to add station Count observation data to the database please wait...");
+                AddStationCountObserationData();
+                SetTextBlockData("green", "Successfully added stationcount observation data");
+                SetTextBlockData("green", "Please click Finish button to close the application.");
+            }
+            catch (Exception ex)
+            {
+                SetTextBlockData("red", ex.Message);
+            }
+            finally
+            {
+                // Turn off the progress bar.
+                IsRunning = false;
+            }
+        });
     }
 }

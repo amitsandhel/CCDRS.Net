@@ -13,7 +13,6 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using CCDRSManager.Data;
 using System.Windows;
 
 namespace CCDRSManager
