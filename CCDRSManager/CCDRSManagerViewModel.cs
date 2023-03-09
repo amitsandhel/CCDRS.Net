@@ -304,4 +304,63 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
             }
         });
     }
+
+    /// <summary>
+    /// Add screenline data of a given region.
+    /// </summary>
+    /// <returns></returns>
+    public Task AddScreenlineAsync()
+    {
+        return Task.Run(() =>
+        {
+            try
+            {
+                // Turn on the progress bar.
+                IsRunning = true;
+                ClearChangeTracker();
+                SetTextBlockData("green", "Uploading Screenline data please wait...");
+                AddScreenlineData();
+                SetTextBlockData("green", "Screenline data successfully added. Click x to close the application");
+            }
+            catch (Exception ex)
+            {
+                SetTextBlockData("red", ex.Message);
+            }
+            finally
+            {
+                // Turn off the progress bar.
+                IsRunning = false;
+            }
+        });
+    }
+
+    /// <summary>
+    /// Delete Survey data from the database. 
+    /// This deletes data from the survey, station, stationcount and surveystation tables in a cascade manner.
+    /// </summary>
+    /// <returns></returns>
+    public Task DeleteSurveyDataAsync()
+    {
+        return Task.Run(() =>
+        {
+            try
+            {
+                // Turn on the progress bar.
+                IsRunning = true;
+                ClearChangeTracker();
+                SetTextBlockData("green", "Deleting the survey data please wait");
+                DeleteSurveyData();
+                SetTextBlockData("green", "Successfully deleted data please click x to close the application");
+            }
+            catch (Exception ex)
+            {
+                SetTextBlockData("red", ex.Message);
+            }
+            finally
+            {
+                // Turn off the progress bar.
+                IsRunning = false;
+            }
+        });
+    }
 }

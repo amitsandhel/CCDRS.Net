@@ -50,5 +50,11 @@ namespace CCDRSManager
             ScreenlineDialog dialog = new();
             dialog.ShowDialog();
         }
+
+        private void DeleteSurvey(object sender, RoutedEventArgs e)
+        {
+            DeleteSurveyWindow window = new();
+            window.ShowDialog();
+        }
     }
 }
