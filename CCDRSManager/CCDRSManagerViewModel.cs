@@ -13,10 +13,10 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using CCDRSManager.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.ConstrainedExecution;
 using System.Threading.Tasks;
 
 namespace CCDRSManager;
@@ -181,11 +181,120 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Collection of all VehicleCountType objects.
+    /// </summary>
+    private ObservableCollection<VehicleCountTypeModel> _vehicleCountTypes;
+
+    /// <summary>
+    /// Collection of VehicleCountType objects used to populate the combobox.
+    /// </summary>
+    public ObservableCollection<VehicleCountTypeModel> VehicleCountTypes
+    {
+        get
+        {
+            return _vehicleCountTypes;
+        }
+        set
+        {
+            _vehicleCountTypes = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleCountTypes)));
+        }
+    }
+
+    private int _vehicleCountTypeId;
+    /// <summary>
+    /// Set the value of the user selected Vehcilecounttypeid
+    /// </summary>
+    public int VehicleCountTypeId
+    {
+        get
+        {
+            return _vehicleCountTypeId;
+        }
+        set
+        {
+            _vehicleCountTypeId = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleCountTypeId)));
+        }
+    }
+
+    private int _occupancyNumber;
+    /// <summary>
+    /// Set the value of the user selected occupancy number.
+    /// </summary>
+    public int OccupancyNumber
+    {
+        get
+        {
+            return _occupancyNumber;
+        }
+        set
+        {
+            _occupancyNumber = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccupancyNumber)));
+        }
+    }
+
+    private int _countType;
+    /// <summary>
+    /// Set the value of the user selected Vehcilecounttypeid
+    /// </summary>
+    public int CountType
+    {
+        get
+        {
+            return _countType;
+        }
+        set
+        {
+            _countType = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CountType)));
+        }
+    }
+
+    private string _vehicleDescription;
+
+    /// <summary>
+    /// Description of vehicle e.g. auto1.
+    /// </summary>
+    public string VehicleDescription
+    {
+        get
+        {
+            return _vehicleDescription;
+        }
+        set
+        {
+            _vehicleDescription = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleDescription)));
+        }
+    }
+
+    private string _vehicleName;
+
+    /// <summary>
+    /// Name of vehicle e.g. auto
+    /// </summary>
+    public string VehicleName
+    {
+        get
+        {
+            return _vehicleName;
+        }
+        set
+        {
+            _vehicleName = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleName)));
+        }
+    }
+
+    /// <summary>
     /// Controls access to the CCDRS model repository.
     /// </summary>
     public CCDRSManagerViewModel()
     {
         Regions = _ccdrsRepository.Regions;
+        VehicleCountTypes = _ccdrsRepository.VehicleCountTypeModels;
     }
 
     /// <summary>
@@ -362,5 +471,47 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
                 IsRunning = false;
             }
         });
+    }
+
+    /// <summary>
+    /// Selected VehicleCountType property used to check and update the VehicleCountType data.
+    /// </summary>
+    public VehicleCountType SelectedVehicleCountType { get; set; }
+
+    /// <summary>
+    /// Property of Selected Vehicle object.
+    /// </summary>
+    public Vehicle SelectedVehicle { get; set; }
+
+    /// <summary>
+    /// Get the VehicleCountType data.
+    /// </summary>
+    public void GetVehicleData()
+    {
+        SelectedVehicleCountType = _ccdrsRepository.GetVehicleCountTypeData(VehicleCountTypeId);
+        OccupancyNumber = SelectedVehicleCountType.Occupancy;
+        CountType = SelectedVehicleCountType.CountType;
+        VehicleDescription = SelectedVehicleCountType.Description;
+        SelectedVehicle = _ccdrsRepository.GetVehicleData(SelectedVehicleCountType.VehicleId);
+        VehicleName = SelectedVehicle.Name;
+    }
+
+    /// <summary>
+    /// Update the VehicleCountType object with new data.
+    /// </summary>
+    public void UpdateVehicleData()
+    {
+        try
+        {
+            SetTextBlockData("green", "updating vehicle information please wait...");
+            _ccdrsRepository.UpdateVehicleData(SelectedVehicleCountType, SelectedVehicle, OccupancyNumber, CountType, VehicleDescription, VehicleName);
+            SetTextBlockData("green", "Successfully updated Click x to close or continue");
+            VehicleCountTypes.Clear();
+            VehicleCountTypes = _ccdrsRepository.RebuildComboBox();
+        }
+        catch (Exception ex)
+        {
+            SetTextBlockData("red", ex.Message);
+        }
     }
 }

@@ -36,8 +36,8 @@ namespace CCDRSManager
         /// <param name="e"></param>
         private void EditVehicle(object sender, RoutedEventArgs e)
         {
-            VehicleDialog dialog = new();
-            dialog.ShowDialog();
+            VehicleWindow win = new();
+            win.ShowDialog();
         }
 
         /// <summary>

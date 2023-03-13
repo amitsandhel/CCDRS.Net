@@ -16,17 +16,17 @@ using System.Windows.Shapes;
 namespace CCDRSManager
 {
     /// <summary>
-    /// Interaction logic for DeleteSurveyWindow.xaml
+    /// Interaction logic for VehicleWindow.xaml
     /// </summary>
-    public partial class DeleteSurveyWindow : Window
+    public partial class VehicleWindow : Window
     {
-        public DeleteSurveyWindow()
+        [GeneratedRegex("[^0-9]+")]
+        private static partial Regex CheckNumber();
+
+        public VehicleWindow()
         {
             InitializeComponent();
         }
-
-        [GeneratedRegex("[^0-9]+")]
-        private static partial Regex CheckNumber();
 
         /// <summary>
         /// Method to ensure that the values entered in the survey textbox are only integer numbers.
@@ -39,15 +39,34 @@ namespace CCDRSManager
         }
 
         /// <summary>
-        /// Delete the Survey data.
+        /// Populate the window with the data depending on the vehicle object user selected.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void DeleteSurvey(object sender, RoutedEventArgs e)
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataContext is CCDRSManagerViewModel vm)
             {
-                await vm.DeleteSurveyDataAsync();
+                vm.GetVehicleData();
+            }
+        }
+
+        /// <summary>
+        /// Update the Vehicle and VehicleCountType tables.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        //private void UpdateTechnology(object sender, RoutedEventArgs e)
+        private void UpdateTechnology(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is CCDRSManagerViewModel vm)
+            {
+                vm.UpdateVehicleData();
+                // clear the textboxes of all data after successful data upload.
+                VehicleDescription.Clear();
+                VehicleName.Clear();
+                CountType.Clear();
+                Occupancy.Clear();
             }
         }
     }

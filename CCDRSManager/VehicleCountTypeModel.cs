@@ -39,6 +39,16 @@ public class VehicleCountTypeModel : INotifyPropertyChanged
     public int Occupancy { get; set; }
 
     /// <summary>
+    /// Stores the type of vehicle. Used to determine drop down options
+    /// </summary>
+    public int CountType { get; set; }
+
+    /// <summary>
+    /// Foreign key to the vehicle table associated to the vehicle primary key attribute
+    /// </summary>
+    public int VehicleId { get; set; }
+
+    /// <summary>
     /// Initialize the class.
     /// </summary>
     /// <param name="vehicleCountType">Pass in a VehicleCountType object</param>
@@ -47,6 +57,8 @@ public class VehicleCountTypeModel : INotifyPropertyChanged
         Id = vehicleCountType.Id;
         Description = vehicleCountType.Description;
         Occupancy = vehicleCountType.Occupancy;
+        CountType = vehicleCountType.CountType;
+        VehicleId = vehicleCountType.VehicleId;
     }
     public event PropertyChangedEventHandler? PropertyChanged;
 }

@@ -32,12 +32,14 @@ public partial class CCDRSManagerModelRepository
 {
     private readonly CCDRSContext _context;
     private readonly ObservableCollection<RegionModel> _regionsModel;
+    private readonly ObservableCollection<VehicleCountTypeModel> _vehiclesModel;
 
     // Initialize the CCDRS class
     public CCDRSManagerModelRepository(CCDRSContext context)
     {
         _context = context;
         _regionsModel = new ObservableCollection<RegionModel>(_context.Regions.Select(r => new RegionModel(r)));
+        _vehiclesModel = new ObservableCollection<VehicleCountTypeModel>(_context.VehicleCountTypes.Select(r => new VehicleCountTypeModel(r)));
     }
 
     /// <summary>
@@ -46,6 +48,11 @@ public partial class CCDRSManagerModelRepository
     public ReadOnlyObservableCollection<RegionModel> Regions
     {
         get => new(_regionsModel);
+    }
+
+    public ObservableCollection<VehicleCountTypeModel> VehicleCountTypeModels
+    {
+        get => new(_vehiclesModel);
     }
 
     /// <summary>
@@ -239,7 +246,6 @@ public partial class CCDRSManagerModelRepository
             Name = vehicleName
         };
         _context.Vehicles.Add(vehicle);
-        //_context.SaveChanges();
         Save();
         return vehicle;
     }
@@ -568,6 +574,61 @@ public partial class CCDRSManagerModelRepository
             // insert data into the ScreenlineStation table.
             AddScreenlineStationData(regionId, slineCode, stationCode);
         }
+    }
+
+    /// <summary>
+    /// Property to get a list of all VehicleCountType objects that exist in the database.
+    /// </summary>
+    public ObservableCollection<VehicleCountTypeModel> Vehicles
+    {
+        get => new(_vehiclesModel);
+    }
+
+    /// <summary>
+    /// Get the VehicleCount Type object based on user specified id.
+    /// </summary>
+    /// <param name="vehicleCountTypeId"></param>
+    /// <returns></returns>
+    public VehicleCountType GetVehicleCountTypeData(int vehicleCountTypeId)
+    {
+        return _context.VehicleCountTypes.Where(v => v.Id == vehicleCountTypeId).First();
+    }
+
+    /// <summary>
+    /// Get the Vehicle object user specified.
+    /// </summary>
+    /// <param name="vehicleId"></param>
+    /// <returns></returns>
+    public Vehicle GetVehicleData(int vehicleId)
+    {
+        return _context.Vehicles.Where(v => v.Id == vehicleId).First();
+    }
+
+    /// <summary>
+    /// Update the VehicleCountType object in the datbase with the new user provided values.
+    /// </summary>
+    /// <param name="selectedVehicleCountType">VehicleCountType object to update.</param>
+    /// <param name="selectedVehicle">Vehicle object of selected VehicleCountType object.</param>
+    /// <param name="occupancyNumber">New occupancy number.</param>
+    /// <param name="countType">New counttype.</param>
+    /// <param name="vehicleDescription">New vehicle description.</param>
+    /// <param name="vehicleName">New vehicle name.</param>
+    public void UpdateVehicleData(VehicleCountType selectedVehicleCountType, Vehicle selectedVehicle, int occupancyNumber, int countType, string vehicleDescription, string vehicleName)
+    {
+        var item = _context.VehicleCountTypes.Find(selectedVehicleCountType.Id);
+        item.GetType().GetProperty("Description").SetValue(item, vehicleDescription);
+        item.GetType().GetProperty("Occupancy").SetValue(item, occupancyNumber);
+        item.GetType().GetProperty("CountType").SetValue(item, countType);
+        _context.SaveChanges();
+    }
+
+    /// <summary>
+    /// Rebuild the VehicleCountTypeModel list to update the combo box.
+    /// </summary>
+    /// <returns></returns>
+    public ObservableCollection<VehicleCountTypeModel> RebuildComboBox()
+    {
+        return new ObservableCollection<VehicleCountTypeModel>(_context.VehicleCountTypes.Select(r => new VehicleCountTypeModel(r)));
     }
 
     /// <summary>
