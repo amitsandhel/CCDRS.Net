@@ -15,6 +15,7 @@
 
 using CCDRSManager.Model;
 using System.ComponentModel;
+using System.IO;
 
 namespace CCDRSManager;
 
@@ -23,30 +24,99 @@ namespace CCDRSManager;
 /// </summary>
 public class VehicleCountTypeModel : INotifyPropertyChanged
 {
+    private readonly VehicleCountType _vehicleCountType;
+
     /// <summary>
     /// Primary serial key of vehicle_count_type
     /// </summary>
-    public int Id { get; set; }
+    public int Id
+    {
+        get
+        {
+            return _vehicleCountType.Id;
+        }
+        set
+        {
+            _vehicleCountType.Id = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Id)));
+        }
+    }
 
     /// <summary>
-    /// Decription of the vehicle e.g. auto1.
+    /// Description of the vehicle e.g. auto1.
     /// </summary>
-    public string Description { get; set; }
+    public string Description
+    {
+        get
+        {
+            return _vehicleCountType.Description;
+        }
+        set
+        {
+            _vehicleCountType.Description = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Description)));
+        }
+    }
 
     /// <summary>
     /// Number of occupants that can sit in the vehicle.
     /// </summary>
-    public int Occupancy { get; set; }
+    public int Occupancy
+    {
+        get
+        {
+            return _vehicleCountType.Occupancy;
+        }
+        set
+        {
+            _vehicleCountType.Occupancy = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Occupancy)));
+        }
+    }
 
     /// <summary>
     /// Stores the type of vehicle. Used to determine drop down options
     /// </summary>
-    public int CountType { get; set; }
+    public int CountType
+    {
+        get
+        {
+            return _vehicleCountType.CountType;
+        }
+        set
+        {
+            _vehicleCountType.CountType = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CountType)));
+        }
+    }
 
     /// <summary>
     /// Foreign key to the vehicle table associated to the vehicle primary key attribute
     /// </summary>
-    public int VehicleId { get; set; }
+    public int VehicleId
+    {
+        get
+        {
+            return _vehicleCountType.VehicleId;
+        }
+        set
+        {
+            _vehicleCountType.VehicleId = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleId)));
+        }
+    }
+
+    /// <summary>
+    /// Name of Vehicle.
+    /// </summary>
+    public string VehicleName
+    {
+        get
+        {
+            return _vehicleCountType.Vehicle.Name;
+        }
+    }
+
 
     /// <summary>
     /// Initialize the class.
@@ -54,11 +124,8 @@ public class VehicleCountTypeModel : INotifyPropertyChanged
     /// <param name="vehicleCountType">Pass in a VehicleCountType object</param>
     public VehicleCountTypeModel(VehicleCountType vehicleCountType)
     {
-        Id = vehicleCountType.Id;
-        Description = vehicleCountType.Description;
-        Occupancy = vehicleCountType.Occupancy;
-        CountType = vehicleCountType.CountType;
-        VehicleId = vehicleCountType.VehicleId;
+        _vehicleCountType = vehicleCountType;
     }
+
     public event PropertyChangedEventHandler? PropertyChanged;
 }

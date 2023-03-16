@@ -13,11 +13,8 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using CCDRSManager.Model;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace CCDRSManager;
 
@@ -96,7 +93,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     private string _stationCountObservationFile = string.Empty;
 
     /// <summary>
-    /// Name of StationCountObservation CCDRS csv file.
+    /// Path to StationCountObservation CCDRS csv file.
     /// </summary>
     public string StationCountObservationFile
     {
@@ -128,7 +125,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     private string _screenlineFileName = string.Empty;
 
     /// <summary>
-    /// Name of screenline csv file.
+    /// Path to Screenline file.
     /// </summary>
     public string ScreenlineFileName
     {
@@ -180,121 +177,24 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
-    /// <summary>
-    /// Collection of all VehicleCountType objects.
-    /// </summary>
-    private ObservableCollection<VehicleCountTypeModel> _vehicleCountTypes;
+
+    private readonly ObservableCollection<VehicleCountTypeModel> _vehicleCountTypes;
 
     /// <summary>
-    /// Collection of VehicleCountType objects used to populate the combobox.
+    /// Collection of VehicleCountTypeModel objects to get a list of VehicleCountType objects.
     /// </summary>
-    public ObservableCollection<VehicleCountTypeModel> VehicleCountTypes
-    {
-        get
-        {
-            return _vehicleCountTypes;
-        }
-        set
-        {
-            _vehicleCountTypes = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleCountTypes)));
-        }
-    }
-
-    private int _vehicleCountTypeId;
-    /// <summary>
-    /// Set the value of the user selected Vehcilecounttypeid
-    /// </summary>
-    public int VehicleCountTypeId
-    {
-        get
-        {
-            return _vehicleCountTypeId;
-        }
-        set
-        {
-            _vehicleCountTypeId = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleCountTypeId)));
-        }
-    }
-
-    private int _occupancyNumber;
-    /// <summary>
-    /// Set the value of the user selected occupancy number.
-    /// </summary>
-    public int OccupancyNumber
-    {
-        get
-        {
-            return _occupancyNumber;
-        }
-        set
-        {
-            _occupancyNumber = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OccupancyNumber)));
-        }
-    }
-
-    private int _countType;
-    /// <summary>
-    /// Set the value of the user selected Vehcilecounttypeid
-    /// </summary>
-    public int CountType
-    {
-        get
-        {
-            return _countType;
-        }
-        set
-        {
-            _countType = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CountType)));
-        }
-    }
-
-    private string _vehicleDescription;
-
-    /// <summary>
-    /// Description of vehicle e.g. auto1.
-    /// </summary>
-    public string VehicleDescription
-    {
-        get
-        {
-            return _vehicleDescription;
-        }
-        set
-        {
-            _vehicleDescription = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleDescription)));
-        }
-    }
-
-    private string _vehicleName;
-
-    /// <summary>
-    /// Name of vehicle e.g. auto
-    /// </summary>
-    public string VehicleName
-    {
-        get
-        {
-            return _vehicleName;
-        }
-        set
-        {
-            _vehicleName = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(VehicleName)));
-        }
-    }
+    public ReadOnlyObservableCollection<VehicleCountTypeModel> VehicleCountTypes
+        => new(_vehicleCountTypes);
 
     /// <summary>
     /// Controls access to the CCDRS model repository.
     /// </summary>
     public CCDRSManagerViewModel()
     {
-        Regions = _ccdrsRepository.Regions;
-        VehicleCountTypes = _ccdrsRepository.VehicleCountTypeModels;
+        Regions = _ccdrsRepository?.Regions
+            ?? new(new ObservableCollection<RegionModel>());
+        _vehicleCountTypes = _ccdrsRepository?.VehicleCountTypeModels
+            ?? new(new ObservableCollection<VehicleCountTypeModel>());
     }
 
     /// <summary>
@@ -385,22 +285,30 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
                 // Turn on the progress bar.
                 IsRunning = true;
                 ClearChangeTracker();
-                SetTextBlockData("green", "Deleting survey data if exists please wait...");
-                DeleteSurveyData();
-                SetTextBlockData("green", "Successfully deleted survey data.");
-                SetTextBlockData("green", "Attempting to add survey data to the database please wait...");
-                AddSurveyData();
-                SetTextBlockData("green", "Successfully added survey data");
-                SetTextBlockData("green", "Attempting to add Station Data please wait...");
-                AddStationData();
-                SetTextBlockData("green", "Successfully added station data");
-                SetTextBlockData("green", "Attempting to add surveystation data to the database please wait...");
-                AddSurveyStationData();
-                SetTextBlockData("green", "Successfully added surveystation data");
-                SetTextBlockData("green", "Attempting to add station Count observation data to the database please wait...");
-                AddStationCountObserationData();
-                SetTextBlockData("green", "Successfully added stationcount observation data");
-                SetTextBlockData("green", "Please click Finish button to close the application.");
+                // If the StationFile is valid continue processing remaining steps.
+                if (CheckStationFile())
+                {
+                    // If the stationcountobservation file is valid continue processing the steps.
+                    if (CheckStationCountFile())
+                    {
+                        SetTextBlockData("green", "Deleting survey data if exists please wait...");
+                        DeleteSurveyData();
+                        SetTextBlockData("green", "Successfully deleted survey data.");
+                        SetTextBlockData("green", "Attempting to add survey data to the database please wait...");
+                        AddSurveyData();
+                        SetTextBlockData("green", "Successfully added survey data");
+                        SetTextBlockData("green", "Attempting to add Station Data please wait...");
+                        AddStationData();
+                        SetTextBlockData("green", "Successfully added station data");
+                        SetTextBlockData("green", "Attempting to add surveystation data to the database please wait...");
+                        AddSurveyStationData();
+                        SetTextBlockData("green", "Successfully added surveystation data");
+                        SetTextBlockData("green", "Attempting to add station Count observation data to the database please wait...");
+                        AddStationCountObserationData();
+                        SetTextBlockData("green", "Successfully added stationcount observation data");
+                        SetTextBlockData("green", "Please click Finish button to close the application.");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -427,9 +335,13 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
                 // Turn on the progress bar.
                 IsRunning = true;
                 ClearChangeTracker();
-                SetTextBlockData("green", "Uploading Screenline data please wait...");
-                AddScreenlineData();
-                SetTextBlockData("green", "Screenline data successfully added. Click x to close the application");
+                if (CheckScreenlineFile())
+                {
+                    // Screenline file is valid now updating the database.
+                    SetTextBlockData("green", "Success now uploading Screenline data please wait...");
+                    AddScreenlineData();
+                    SetTextBlockData("green", "Screenline data successfully added. Click x to close the application");
+                }
             }
             catch (Exception ex)
             {
@@ -445,7 +357,8 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
 
     /// <summary>
     /// Delete Survey data from the database. 
-    /// This deletes data from the survey, station, stationcount and surveystation tables in a cascade manner.
+    /// This deletes data from the survey, station, stationcount 
+    /// and surveystation tables in a cascade manner.
     /// </summary>
     /// <returns></returns>
     public Task DeleteSurveyDataAsync()
@@ -473,27 +386,153 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         });
     }
 
-    /// <summary>
-    /// Selected VehicleCountType property used to check and update the VehicleCountType data.
-    /// </summary>
-    public VehicleCountType SelectedVehicleCountType { get; set; }
+    private VehicleCountTypeModel? _selectedVehicleCountType;
 
     /// <summary>
-    /// Property of Selected Vehicle object.
+    /// VehicleCountTypeModel property.
     /// </summary>
-    public Vehicle SelectedVehicle { get; set; }
-
-    /// <summary>
-    /// Get the VehicleCountType data.
-    /// </summary>
-    public void GetVehicleData()
+    public VehicleCountTypeModel? SelectedVehicleCountType
     {
-        SelectedVehicleCountType = _ccdrsRepository.GetVehicleCountTypeData(VehicleCountTypeId);
-        OccupancyNumber = SelectedVehicleCountType.Occupancy;
-        CountType = SelectedVehicleCountType.CountType;
-        VehicleDescription = SelectedVehicleCountType.Description;
-        SelectedVehicle = _ccdrsRepository.GetVehicleData(SelectedVehicleCountType.VehicleId);
-        VehicleName = SelectedVehicle.Name;
+        get
+        {
+            return _selectedVehicleCountType;
+        }
+        set
+        {
+            _selectedVehicleCountType = value;
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedVehicleCountType)));
+            SelectedVehicleCountTypeViewModel = new VehicleCountTypeViewModel(value);
+        }
+    }
+
+    private VehicleCountTypeViewModel? _selectedVehicleCountTypeViewModel;
+
+    /// <summary>
+    /// Selected VehicleCountType View Model
+    /// </summary>
+    public VehicleCountTypeViewModel? SelectedVehicleCountTypeViewModel
+    {
+        get
+        {
+            return _selectedVehicleCountTypeViewModel;
+        }
+        set
+        {
+            _selectedVehicleCountTypeViewModel = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedVehicleCountTypeViewModel)));
+        }
+    }
+
+    /// <summary>
+    /// VehicleCountTypeViewModel Class that keeps a copy of the VehicleCountType object.
+    /// </summary>
+    public class VehicleCountTypeViewModel : INotifyPropertyChanged
+    {
+
+        public int Id { get; set; }
+
+        public string _description;
+
+        /// <summary>
+        /// Description of VehicleCountType.
+        /// </summary>
+        public string Description
+        {
+            get
+            {
+                return _description;
+            }
+            set
+            {
+                _description = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Description)));
+            }
+        }
+
+        /// <summary>
+        /// Number of occupants that can sit in the vehicle.
+        /// </summary>
+        private int _occupancy;
+        public int Occupancy
+        {
+            get
+            {
+                return _occupancy;
+            }
+            set
+            {
+                _occupancy = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Occupancy)));
+            }
+        }
+        private int _countType;
+
+        /// <summary>
+        /// Stores the type of vehicle. Used to determine drop down options
+        /// </summary>
+        public int CountType
+        {
+            get
+            {
+                return _countType;
+            }
+            set
+            {
+                _countType = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CountType)));
+            }
+        }
+
+        /// <summary>
+        /// Name of Vehicle.
+        /// </summary>
+        public string VehicleName => _model?.VehicleName ?? "no vehicle selected";
+
+        private readonly VehicleCountTypeModel? _model;
+        public VehicleCountTypeViewModel(VehicleCountTypeModel? model)
+        {
+            if (model is not null)
+            {
+                Id = model.Id;
+                _description = model.Description;
+                Occupancy = model.Occupancy;
+                CountType = model.CountType;
+                _model = model;
+            }
+            else
+            {
+                Id = 0;
+                _description = string.Empty;
+                Occupancy = 0;
+                CountType = -1;
+                _model = null;
+            }
+
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        public bool IsUpdateable
+        {
+            get
+            {
+                return _model is not null;
+            }
+        }
+
+        /// <summary>
+        /// Update the model with the updated values.
+        /// </summary>
+        internal void Update()
+        {
+            if (_model is not null)
+            {
+                _model.Description = Description;
+                _model.Occupancy = Occupancy;
+                _model.CountType = CountType;
+            }
+        }
     }
 
     /// <summary>
@@ -504,14 +543,75 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         try
         {
             SetTextBlockData("green", "updating vehicle information please wait...");
-            _ccdrsRepository.UpdateVehicleData(SelectedVehicleCountType, SelectedVehicle, OccupancyNumber, CountType, VehicleDescription, VehicleName);
+            if (SelectedVehicleCountTypeViewModel is not null
+                && SelectedVehicleCountType is not null)
+            {
+                SelectedVehicleCountTypeViewModel.Update();
+                _ccdrsRepository.UpdateVehicleData(SelectedVehicleCountType);
+            }
             SetTextBlockData("green", "Successfully updated Click x to close or continue");
-            VehicleCountTypes.Clear();
-            VehicleCountTypes = _ccdrsRepository.RebuildComboBox();
         }
         catch (Exception ex)
         {
             SetTextBlockData("red", ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Check if the station file is valid before doing database operations.
+    /// </summary>
+    /// <returns>True if the validations succeeds false if the validation fails.</returns>
+    public bool CheckStationFile()
+    {
+        SetTextBlockData("green", "Checking and validating Station file please wait...");
+        bool isValid = CCDRSManagerModelRepository.ValidateStationFile(StationFileName, out var message);
+        if (isValid)
+        {
+            SetTextBlockData("green", "Success no errors found in station file...");
+            return true;
+        }
+        else
+        {
+            SetTextBlockData("red", message);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Check if the StationCountObservation file is valid before doing any database operations.
+    /// </summary>
+    public bool CheckStationCountFile()
+    {
+        SetTextBlockData("green", "Checking and validating StationCountObservation file please wait...");
+        bool isValid = CCDRSManagerModelRepository.ValidateStationCountObservationFile(StationCountObservationFile, out string? message);
+        if (isValid)
+        {
+            SetTextBlockData("green", "Success no errors found in stationcountobservation file...");
+            return true;
+        }
+        else
+        {
+            SetTextBlockData("red", message);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Check if the Screenline file is valid before doing any database operations.
+    /// </summary>
+    public bool CheckScreenlineFile()
+    {
+        SetTextBlockData("green", "Checking Screenline file for errors...");
+        bool isValid = CCDRSManagerModelRepository.ValidateScreenlineFile(ScreenlineFileName, out var message);
+        if (isValid)
+        {
+            SetTextBlockData("green", "Success no errors found in screenline file...");
+            return true;
+        }
+        else
+        {
+            SetTextBlockData("red", message);
+            return false;
         }
     }
 }

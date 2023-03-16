@@ -16,11 +16,9 @@
 using CCDRSManager.Data;
 using CCDRSManager.Model;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CCDRSManager;
@@ -39,7 +37,7 @@ public partial class CCDRSManagerModelRepository
     {
         _context = context;
         _regionsModel = new ObservableCollection<RegionModel>(_context.Regions.Select(r => new RegionModel(r)));
-        _vehiclesModel = new ObservableCollection<VehicleCountTypeModel>(_context.VehicleCountTypes.Select(r => new VehicleCountTypeModel(r)));
+        _vehiclesModel = new ObservableCollection<VehicleCountTypeModel>(_context.VehicleCountTypes.Include(vc => vc.Vehicle).Select(r => new VehicleCountTypeModel(r)));
     }
 
     /// <summary>
@@ -152,7 +150,6 @@ public partial class CCDRSManagerModelRepository
         using (var readFile = new StreamReader(stationFileName))
         {
             string? line;
-            string[] row;
             readFile.ReadLine();
             int lineNumber = 0;
 
@@ -162,7 +159,7 @@ public partial class CCDRSManagerModelRepository
                 lineNumber++;
                 try
                 {
-                    row = line.Split(';');
+                    string[] row = line.Split(';');
                     // add station data
                     AddStationIfNotExists(regionId, row[0], row[1]);
                 }
@@ -224,7 +221,7 @@ public partial class CCDRSManagerModelRepository
     }
 
     /// <summary>
-    /// Checks if a vehicle_count_type object exists based on a given vehicle id and occupancy number.
+    /// Checks if a VehiclCountObjectType object exists based on a given vehicle id and occupancy number.
     /// </summary>
     /// <param name="vehicleId">Primary key of vehicle.</param>
     /// <param name="occupancy">Number of occupants that can sit in vehicle.</param>
@@ -533,7 +530,7 @@ public partial class CCDRSManagerModelRepository
         // Find the station object in the data.
         Station? station = _context.Stations.FirstOrDefault(s => s.StationCode == stationCode && s.RegionId == regionId);
 
-        if (station is not null)
+        if (station is not null && screenline is not null)
         {
             // Create a new ScreenlineStation object.
             ScreenlineStation newScreenlineStation = new()
@@ -599,27 +596,18 @@ public partial class CCDRSManagerModelRepository
     /// </summary>
     /// <param name="vehicleId"></param>
     /// <returns></returns>
-    public Vehicle GetVehicleData(int vehicleId)
+    public Vehicle? GetVehicleData(int vehicleId)
     {
-        return _context.Vehicles.Where(v => v.Id == vehicleId).First();
+        return _context.Vehicles.Where(v => v.Id == vehicleId).FirstOrDefault();
     }
 
     /// <summary>
     /// Update the VehicleCountType object in the datbase with the new user provided values.
     /// </summary>
     /// <param name="selectedVehicleCountType">VehicleCountType object to update.</param>
-    /// <param name="selectedVehicle">Vehicle object of selected VehicleCountType object.</param>
-    /// <param name="occupancyNumber">New occupancy number.</param>
-    /// <param name="countType">New counttype.</param>
-    /// <param name="vehicleDescription">New vehicle description.</param>
-    /// <param name="vehicleName">New vehicle name.</param>
-    public void UpdateVehicleData(VehicleCountType selectedVehicleCountType, Vehicle selectedVehicle, int occupancyNumber, int countType, string vehicleDescription, string vehicleName)
+    public void UpdateVehicleData(VehicleCountTypeModel selectedVehicleCountType)
     {
-        var item = _context.VehicleCountTypes.Find(selectedVehicleCountType.Id);
-        item.GetType().GetProperty("Description").SetValue(item, vehicleDescription);
-        item.GetType().GetProperty("Occupancy").SetValue(item, occupancyNumber);
-        item.GetType().GetProperty("CountType").SetValue(item, countType);
-        _context.SaveChanges();
+        Save();
     }
 
     /// <summary>
@@ -629,6 +617,224 @@ public partial class CCDRSManagerModelRepository
     public ObservableCollection<VehicleCountTypeModel> RebuildComboBox()
     {
         return new ObservableCollection<VehicleCountTypeModel>(_context.VehicleCountTypes.Select(r => new VehicleCountTypeModel(r)));
+    }
+
+    /// <summary>
+    /// Checks the parsed string array of the station row is two.
+    /// </summary>
+    /// <param name="dataRow">The string of the data row to validate</param>
+    /// <returns>True if the length is 2 false if not.</returns>
+    private static bool CheckStationFileRowLength(string[] dataRow) => dataRow.Length == 2;
+
+    /// <summary>
+    /// Checks to ensure the stationcode exists and isn't a null or empty string.
+    /// </summary>
+    /// <param name="stationCode">Station code string e.g. 100E</param>
+    /// <returns>True if valid entry exits false otherwise.</returns>
+    private static bool ValidateStationCode(string stationCode) => !String.IsNullOrEmpty(stationCode);
+
+    /// <summary>
+    /// Check if the station file uploaded by user is valid. Checks for various errors and throws custom
+    /// exceptions back to user.
+    /// </summary>
+    /// <param name="stationFileName">FilePath to station file.</param>
+    /// <param name="refError"></param>
+    /// <returns></returns>
+    public static bool ValidateStationFile(string stationFileName, [NotNullWhen(false)] out string refError)
+    {
+        // Loop through the station csv file
+        using var readFile = new StreamReader(stationFileName);
+        List<string> stationCodeList = new();
+        string? line = readFile.ReadLine();
+        int lineNumber = 0;
+        refError = string.Empty;
+
+        // loop through the line
+        while ((line = readFile.ReadLine()) is not null)
+        {
+            lineNumber++;
+            string[] row = line.Split(';');
+            string stationCode = row[0];
+
+            //the parse doesn't show 2 columns
+            if (CheckStationFileRowLength(row) == false)
+            {
+                refError = "Couldn't parse file " + stationFileName + " on line " + lineNumber + " Please reupload \n";
+                return false;
+            }
+
+            // station is null or empty
+            if (ValidateStationCode(stationCode) == false)
+            {
+                refError = "Missing station code " + stationFileName + " on line " + lineNumber + " Please Reupload \n";
+                return false;
+            }
+
+            // Check if duplicate station data exists
+            if (stationCodeList.Contains(stationCode))
+            {
+                refError = "Duplicate Station code found on line " + lineNumber + " please reupload \n";
+                return false;
+            }
+            else
+            {
+                stationCodeList.Add(stationCode);
+            }
+        }
+        refError = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// Checks if the any cell in the stationcountobservationfile is an empty cell/value.
+    /// </summary>
+    /// <param name="rowData"></param>
+    /// <returns></returns>
+    private static bool ValidateStationCountObservationData(string[] rowData)
+    {
+        //check if any empty cells exists.
+        if (rowData.Any(s => string.IsNullOrEmpty(s)))
+        {
+            // Empty cells were discovered and found.
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    /// <summary>
+    /// Check if StationCountObservation file is valid.
+    /// </summary>
+    /// <param name="stationCountObservationFile">File path to StationCountObservation file.</param>
+    /// <exception cref="Exception"></exception>
+    public static bool ValidateStationCountObservationFile(string stationCountObservationFile, [NotNullWhen(false)] out string refError)
+    {
+        // read the station_count_observation ccdrs csv file
+        using var readFile = new StreamReader(stationCountObservationFile);
+        int lineNumber = 0;
+        string? line;
+
+        refError = string.Empty;
+
+        List<Tuple<string, int>> stationCountTupleList = new() { };
+
+        // Extract the header of the csv file which contains the columns of vehicle types.
+        _ = readFile.ReadLine()?.Split(',') ?? throw new Exception("No header file found");
+
+        // Loop through the remaining rows of data and insert the observation data into the database.
+        while ((line = readFile.ReadLine()) is not null)
+        {
+            lineNumber++;
+            string[] rowData = line.Split(',');
+            string stationCode = rowData[0];
+            int time = int.Parse(rowData[1]);
+
+            // Check if any duplicate stationcode and time exists.
+            if (stationCountTupleList.Any(t => t.Item1 == stationCode && t.Item2 == time))
+            {
+                refError = "Duplicate station code in file " + stationCountObservationFile + " found on line " + lineNumber + " fix and please reupload \n";
+                return false;
+            }
+            else
+            {
+                stationCountTupleList.Add(new Tuple<string, int>(stationCode, time));
+            }
+
+            //check if any empty cells exists.
+            if (ValidateStationCountObservationData(rowData) == false)
+            {
+                refError = "Empty data exists in file " + stationCountObservationFile + " found on line " + lineNumber + "\n";
+                return false;
+            }
+
+            if (ValidateStationCode(stationCode) == false)
+            {
+                refError = "Missing station code " + stationCountObservationFile + " on line " + lineNumber + " Please Reupload \n";
+                return false;
+            }
+        }
+        refError = string.Empty;
+        return true;
+    }
+
+    /// <summary>
+    /// Check if the screenline row length is correct.
+    /// </summary>
+    /// <param name="dataRow">string array of the row of data.</param>
+    /// <returns></returns>
+    private static bool CheckScreenlineFileRowLength(string[] dataRow) => dataRow.Length == 3;
+
+    /// <summary>
+    /// Check if the screenline slinecode is empty or null.
+    /// </summary>
+    /// <param name="slineCode">The screenline code e.g. SL1.</param>
+    /// <returns></returns>
+    private static bool ValidateScreenlineCode(string ValidateScreenlineCode) => !String.IsNullOrEmpty(ValidateScreenlineCode);
+
+    /// <summary>
+    /// Check if the Screenline file uploaded by user is valid. Checks for various errors and throws custom
+    /// exceptions back to user.
+    /// </summary>
+    /// <param name="screenlineFileName">File path to the screenline file.</param>
+    /// <exception cref="Exception"></exception>
+    public static bool ValidateScreenlineFile(string screenlineFileName, [NotNullWhen(false)] out string refError)
+    {
+        // read the screenline csv file
+        using var readFile = new StreamReader(screenlineFileName);
+        string? line;
+        List<string> stationCodeList = new() { };
+        int lineNumber = 0;
+        refError = string.Empty;
+
+        // Loop through the remaining rows of data and insert the screenline data into the database.
+        while ((line = readFile.ReadLine()) is not null)
+        {
+            lineNumber++;
+            string[] rowData = line.Split(',');
+
+            //the parse doesn't show 3 columns
+            if (CheckScreenlineFileRowLength(rowData))
+            {
+                string slineCode = rowData[0];
+                string slineDescription = rowData[1];
+                string stationCode = rowData[2];
+
+                // Stationcode is null or not supplied
+                bool res = ValidateStationCode(stationCode);
+                if (ValidateStationCode(stationCode) == false)
+                {
+                    refError = "Missing station code " + screenlineFileName + " on line " + lineNumber + "Please Reupload \n";
+                    return false;
+                }
+
+                // Screenline code is null or not supplied
+                if (ValidateScreenlineCode(slineCode) == false)
+                {
+                    refError = "Missing screenline code " + screenlineFileName + " on line " + lineNumber + " Please Reupload \n";
+                    return false;
+                }
+                
+                // Duplicate data exists
+                if (stationCodeList.Contains(stationCode))
+                {
+                    refError = "Duplicate station code in file " + screenlineFileName + "on line " + lineNumber + "please Reupload \n";
+                    return false;
+                }
+                else
+                {
+                    stationCodeList.Add(stationCode);
+                }
+            }
+            else
+            {
+                refError = "Corrupt data in file " + screenlineFileName + " on line " + lineNumber + " couldn't parse the line \n";
+                return false;
+            }
+        }
+        refError = string.Empty;
+        return true;
     }
 
     /// <summary>

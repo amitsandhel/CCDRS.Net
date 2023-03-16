@@ -40,57 +40,57 @@ public partial class CCDRSContext : DbContext
     /// <summary>
     /// Allow pages to access the Direction class as a service.
     /// </summary>
-    public virtual DbSet<Direction> Directions { get; set; }
+    public virtual DbSet<Direction> Directions { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access Region class as a service.
     /// </summary>
-    public virtual DbSet<Region> Regions { get; set; }
+    public virtual DbSet<Region> Regions { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access survey class as a service.
     /// </summary>
-    public virtual DbSet<Survey> Surveys { get; set; }
+    public virtual DbSet<Survey> Surveys { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access Vehicle class as a service.
     /// </summary>
-    public virtual DbSet<Vehicle> Vehicles { get; set; }
+    public virtual DbSet<Vehicle> Vehicles { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access VehicleCountType class as a service.
     /// </summary>
-    public virtual DbSet<VehicleCountType> VehicleCountTypes { get; set; }
+    public virtual DbSet<VehicleCountType> VehicleCountTypes { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access Station class as a service.
     /// </summary>
-    public virtual DbSet<Station> Stations { get; set; }
+    public virtual DbSet<Station> Stations { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access Screenline class as a service.
     /// </summary>
-    public virtual DbSet<Screenline> Screenlines { get; set; }
+    public virtual DbSet<Screenline> Screenlines { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access SurveyStation class as a service.
     /// </summary>
-    public virtual DbSet<SurveyStation> SurveyStations { get; set; }
+    public virtual DbSet<SurveyStation> SurveyStations { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access StationCountObservation as a service.
     /// </summary>
-    public virtual DbSet<StationCountObservation> StationCountObservations { get; set; }
+    public virtual DbSet<StationCountObservation> StationCountObservations { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access the individualCategory as a service.
     /// </summary>
-    public virtual DbSet<IndividualCategory> IndividualCategories { get; set; }
+    public virtual DbSet<IndividualCategory> IndividualCategories { get; set; } = null!;
 
     /// <summary>
     /// Allow pages to access the ScreenlineStation as a service.
     /// </summary>
-    public virtual DbSet<ScreenlineStation> ScreenlineStations { get; set; }
+    public virtual DbSet<ScreenlineStation> ScreenlineStations { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

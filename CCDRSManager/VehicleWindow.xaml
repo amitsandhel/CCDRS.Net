@@ -15,23 +15,21 @@
             <ComboBox ItemsSource="{Binding VehicleCountTypes}" 
                                   SelectedValuePath="Id" 
                               DisplayMemberPath="Description"
-                              SelectedValue="{Binding VehicleCountTypeId}"
-                                  IsEditable="False" SelectionChanged="ComboBox_SelectionChanged" />
+                              SelectedItem="{Binding SelectedVehicleCountType, Mode=OneWayToSource}"
+                                  IsEditable="False" />
             <Label>occupancy</Label>
-            <TextBox x:Name="Occupancy"  PreviewTextInput="PreviewTextInput" Text="{Binding OccupancyNumber}" />
+            <TextBox x:Name="Occupancy"  PreviewTextInput="PreviewTextInput" Text="{Binding SelectedVehicleCountTypeViewModel.Occupancy}" />
             <Label>Vehicle Description</Label>
-            <TextBox x:Name="VehicleDescription" Text="{Binding VehicleDescription}" />
+            <TextBox x:Name="VehicleDescription" Text="{Binding SelectedVehicleCountTypeViewModel.Description}" />
             <Label>Vehicle</Label>
-            <TextBox x:Name="VehicleName" IsReadOnly="True" Text="{Binding VehicleName}" />
+            <TextBox x:Name="VehicleName" IsReadOnly="True" Text="{Binding SelectedVehicleCountTypeViewModel.VehicleName, Mode=OneWay}" />
             <Label>CountType</Label>
-            <TextBox x:Name="CountType" PreviewTextInput="PreviewTextInput" Text="{Binding CountType}"/>
-            <Button Height="100" Click="UpdateTechnology">Update Vehicle Technology</Button>
+            <TextBox x:Name="CountType" PreviewTextInput="PreviewTextInput" Text="{Binding SelectedVehicleCountTypeViewModel.CountType}"/>
+            <Button Height="100" IsEnabled="{Binding SelectedVehicleCountTypeViewModel.IsUpdateable, Mode=OneWay}" Click="UpdateTechnology">Update Vehicle Technology</Button>
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  TextWrapping="Wrap" Name="errorMessage" Foreground="{Binding TextColour}" 
                                FontWeight="Bold" Text="{Binding TextMessage}" />
             </ScrollViewer>
-
-
         </StackPanel>
     </Grid>
 </Window>
