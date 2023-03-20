@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Linq;
 using System.Text;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
@@ -104,14 +105,22 @@ namespace CCDRS.Pages
             // Query station table to return a list of all stations associated with a given region.
             if (_context.Stations is not null)
             {
-                StationsSelectList = new SelectList((from st in _context.Stations
+                StationsSelectList = (from st in _context.Stations
+                                                     join surveyStations in _context.SurveyStations on st.Id equals surveyStations.StationId
+                                                     join surveys in _context.Surveys on surveyStations.SurveyId equals surveys.Id
+                                                     join stationcounts in _context.StationCountObservations on surveyStations.Id equals stationcounts.SurveyStationId
                                                      where st.RegionId == RegionId
-                                                     orderby st.StationCode
+                                                     && surveys.Id == SelectedSurveyId
                                                      select new
                                                      {
                                                          st.Id,
-                                                         Title = st.StationCode + " " + st.Description
-                                                     }), "Id", "Title");
+                                                         st.StationCode,
+                                                         st.Description,
+                                                         st.StationNum
+                                                     })
+                                                     .Distinct()
+                                                     .OrderBy(st => st.StationNum)
+                                                     .Select(station => new SelectListItem(station.StationCode + " " + station.Description, station.Id.ToString()));
             }
 
             // Query directions table to return direction radiobutton options.

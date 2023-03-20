@@ -246,8 +246,7 @@ namespace CCDRS.Pages
                                  Direction = newgrp.Key.Direction,
                                  Observations = newgrp.Sum(x => x.stationcount.Observation),
                                  VehicleCountTypeId = newgrp.Key.Id,
-                             }
-                          );
+                             });
             foreach (var item in dataList)
             {
                 if (!newlist.TryGetValue((item.SlineCode, item.Time, item.Direction), out var counts))
@@ -259,7 +258,7 @@ namespace CCDRS.Pages
 
             var builder = new StringBuilder();
             foreach (var item in from x in newlist.Keys
-                                 orderby x.screenLineName, x.time
+                                 orderby x.screenLineName, x.direction, x.time
                                  select x
                                      )
             {
