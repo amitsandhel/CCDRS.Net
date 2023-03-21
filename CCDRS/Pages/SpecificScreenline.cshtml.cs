@@ -316,16 +316,23 @@ namespace CCDRS.Pages
                                 && stationcount.Time >= startTime & stationcount.Time <= endTime
                                 && individualCategorySelect.Contains(vehiclecount.Id)
                             group new { screenline, stationcount, vehicle, vehiclecount, station }
-                            by new { screenline.SlineCode, vehicle.Name, vehiclecount.Occupancy, vehiclecount.Id, station.Direction }
+                            by new { screenline.SlineCode, vehicle.Name, vehiclecount.Occupancy, 
+                                vehiclecount.Id, station.Direction, stationcount.Time }
                             into grp
                             select new
                             {
                                 SlineCode = grp.Key.SlineCode,
                                 Observations = grp.Sum(x => x.stationcount.Observation),
                                 VehicleCountTypeId = grp.Key.Id,
-                                Direction = grp.Key.Direction
+                                Direction = grp.Key.Direction,
+                                Time = grp.Key.Time
                             }
                       );
+
+            // Get the minimum and maximum timestamps from the selected dataset.
+            var minimumStartTime = datalist.Min(x => x.Time);
+            var maximumEndTime = datalist.Max(x => x.Time);
+
             foreach (var item in datalist)
             {
                 if (!newlist.TryGetValue((item.SlineCode, item.Direction), out var counts))
@@ -346,9 +353,9 @@ namespace CCDRS.Pages
                 builder.Append(',');
                 builder.Append(item.direction);
                 builder.Append(',');
-                builder.Append(startTime);
+                builder.Append(minimumStartTime);
                 builder.Append(',');
-                builder.Append(endTime);
+                builder.Append(maximumEndTime);
                 foreach (var x in row)
                 {
                     builder.Append(',');

@@ -318,16 +318,24 @@ namespace CCDRS.Pages
                                 surveys.Id == SelectedSurveyId &
                                 stationCounts.Time > startTime & stationCounts.Time <= endTime &
                                 individualCategorySelect.Contains(vehicleCountTypes.Id)
-                            group new { stationCounts, vehicleCountTypes, stations, vehicles } by new { stations.StationCode, vehicles.Name, vehicleCountTypes.Occupancy, vehicleCountTypes.Id }
+                            group new { stationCounts, vehicleCountTypes, stations, vehicles } 
+                            by new { stations.StationCode, vehicles.Name, vehicleCountTypes.Occupancy, 
+                                vehicleCountTypes.Id, stationCounts.Time }
                             into groupedBystationCountObservations
                             select new
                             {
                                 Station = groupedBystationCountObservations.Key.StationCode,
                                 Observations = groupedBystationCountObservations.Sum(x => x.stationCounts.Observation),
                                 VehicleCountTypeId = groupedBystationCountObservations.Key.Id,
-                                groupedBystationCountObservations.Key.Occupancy
+                                groupedBystationCountObservations.Key.Occupancy,
+                                Time = groupedBystationCountObservations.Key.Time
                             }
                       );
+
+            // Get the minimum and maximum timestamps from the selected dataset.
+            var minimumStartTime = dataList.Min(x => x.Time);
+            var maximumEndTime = dataList.Max(x => x.Time);
+
             foreach (var item in dataList)
             {
                 if (!newlist.TryGetValue(item.Station, out var counts))
@@ -343,9 +351,9 @@ namespace CCDRS.Pages
                 var row = newlist[item];
                 builder.Append(item);
                 builder.Append(',');
-                builder.Append(startTime);
+                builder.Append(minimumStartTime);
                 builder.Append(',');
-                builder.Append(endTime);
+                builder.Append(maximumEndTime);
                 foreach (var x in row)
                 {
                     builder.Append(',');
