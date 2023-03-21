@@ -65,3 +65,13 @@ input[type='radio']:checked:after {
     background-color: #434857;
     border: 1px solid #434857;
 }
+
+/* Background colour of select library dropdown. */
+.select2-results__option {
+    color: black;
+}
+
+/* The colour of the text inside the selected value of the select2 select. */
+.select2-selection__choice span {
+    color: black;
+}

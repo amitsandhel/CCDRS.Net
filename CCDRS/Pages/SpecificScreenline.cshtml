@@ -6,7 +6,7 @@
     <h1>Specific Screenline for @ViewData["RegionName"]  @ViewData["SurveyYear"] </h1>
     <form method="post">
         <div style="margin-bottom:30px; margin-top:30px">
-            <select name="SelectedScreenlines" asp-items="Model.SelectedScreenlines" multiple="multiple"></select>
+            <select class="screenlineList" name="SelectedScreenlines" asp-items="Model.SelectedScreenlines" multiple="multiple"></select>
          </div>
         <hr class="border border-primary" />
         <partial name="/Pages/Shared/_CCDRenderPartial.cshtml" />
@@ -15,3 +15,9 @@
         <input type="hidden" id="SelectedSurveyId" name="SelectedSurveyId" asp-for="SelectedSurveyId" />
     </form>
 </body>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.screenlineList').select2();
+    });
+</script>
