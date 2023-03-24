@@ -42,6 +42,11 @@
                     Title="Upload Station file of survey">
                 <StackPanel>
                     <Label Content="Select Station csv file" />
+                    <TextBox IsReadOnly="True" FontStyle="Oblique" 
+                        TextWrapping="Wrap">Please note that the station file should be a txt file 
+                        with a header called #station;description. 
+                        The file should be separated with semi-colons.
+                    </TextBox>
                     <Button x:Name="OpenStationFile"
                         Content="Upload Station File"
                         Click="OpenStationFileDialog"/>
@@ -56,6 +61,12 @@
                     <ProgressBar IsIndeterminate="{Binding IsRunning}" 
                                  Minimum="0" Maximum="100" Height="20" />
                     <Label Content="Select StationCount Data" />
+                    <TextBox IsReadOnly="True" FontStyle="Oblique" TextWrapping="Wrap">Note the stationCountObservation file should be in a csv file format
+                        with comma delimiter ','
+                        Also note that the first two columns of the file should be station and time.
+                        Other columns such as Direction, station number need to be removed from the file before uploading
+                        otherwise it will give errors.
+                    </TextBox>
                     <Button x:Name="OpenFile"
                         Content="Upload StationCount File" 
                         Click="OpenStationCountFile"/>

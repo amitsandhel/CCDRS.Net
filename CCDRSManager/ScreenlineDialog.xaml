@@ -20,6 +20,14 @@
                               SelectedValue="{Binding RegionId}"
                                   IsEditable="False"/>
             <Label Content="Select Screenline csv file to upload" />
+            <TextBox IsReadOnly="True" FontStyle="Oblique" 
+                     TextWrapping="Wrap">The screenline file is to be a 
+                     csv file that is comma delimited. The updated screenline
+                     file does not contain any headers and consists of three
+                     columns the sline Code, the description of the sline code
+                     and a station code associated with that specific 
+                     screenline.
+            </TextBox>
             <Button Content="Upload Screenline File"
                         Click="OpenScreenlineFileDialog"/>
             <TextBox Name="ScreenlineFileName"
