@@ -123,23 +123,48 @@ namespace CCDRS.Pages
             int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
             )
         {
+            // run the query to get a region name and survey year to display in the content header file
+            // Query region table to display the region name to the front end.
+            var regionName = _context.Regions
+                              .Where(r => r.Id == RegionId)
+                              .SingleOrDefault();
+
+            // Query survey table to display the survey year to the front end.
+            var surveyYear = _context.Surveys
+                              .Where(s => s.Id == SelectedSurveyId)
+                              .SingleOrDefault();
+
+            var builder = new StringBuilder();
+
             // User selects total volume.
             if (trafficVolumeRadioButtonSelect == 1)
             {
-                string queryResult = GetTotalVolume(directionCountSelect,
+                // Build the header of the content file
+                builder.Append(regionName?.Name ?? "Unknown Region");
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+
+                builder.Append(GetTotalVolume(directionCountSelect,
                  individualCategorySelect, individualCategoriesList,
                  startTime, endTime
-                 );
-                return Content(queryResult);
+                 ));
+                return Content(builder.ToString());
             }
             else
             {
+                // Build the header of the content file
+                builder.Append(regionName?.Name ?? "Unknown Region");
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+
                 // User selects fifteen minute interval.
-                string queryResult = GetFifteenMinuteInterval(directionCountSelect,
+                builder.Append(GetFifteenMinuteInterval(directionCountSelect,
                  individualCategorySelect, individualCategoriesList,
                  startTime, endTime
-                 );
-                return Content(queryResult);
+                 ));
+                return Content(builder.ToString());
             }
         }
 
@@ -249,16 +274,24 @@ namespace CCDRS.Pages
                                 surveys.Id == SelectedSurveyId &
                                 stationCounts.Time >= startTime & stationCounts.Time <= endTime &
                                 individualCategorySelect.Contains(vehicleCountTypes.Id)
-                            group new { stationCounts, vehicleCountTypes, stations, vehicles } by new { stations.StationCode, vehicles.Name, vehicleCountTypes.Occupancy, vehicleCountTypes.Id }
+                            group new { stationCounts, vehicleCountTypes, stations, vehicles } 
+                            by new { stations.StationCode, vehicles.Name, vehicleCountTypes.Occupancy, 
+                                vehicleCountTypes.Id, stationCounts.Time }
                             into newgrp
                             select new
                             {
                                 Station = newgrp.Key.StationCode,
                                 Observations = newgrp.Sum(x => x.stationCounts.Observation),
                                 VehicleCountTypeId = newgrp.Key.Id,
-                                newgrp.Key.Occupancy
+                                newgrp.Key.Occupancy,
+                                Time = newgrp.Key.Time
                             }
                       );
+
+            // Get the minimum and maximum timestamps from the selected dataset.
+            var minimumStartTime = Utility.CalculateStartTime(dataList.Min(x => x.Time));
+            var maximumEndTime = dataList.Max(x => x.Time);
+
             foreach (var item in dataList)
             {
                 if (!newlist.TryGetValue(item.Station, out var counts))

@@ -122,23 +122,49 @@ namespace CCDRS.Pages
             int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
             )
         {
+            // run the query to get a region name and survey year to display in the content header file
+            // Query region table to display the region name to the front end.
+            var regionName = _context.Regions
+                              .Where(r => r.Id == RegionId)
+                              .SingleOrDefault();
+
+            // Query survey table to display the survey year to the front end.
+            var surveyYear = _context.Surveys
+                              .Where(s => s.Id == SelectedSurveyId)
+                              .SingleOrDefault();
+
+            var builder = new StringBuilder();
+
             // User selects total volume.
             if (trafficVolumeRadioButtonSelect == 1)
             {
-                string x = GetTotalVolume(directionCountSelect, 
-                    startTime, endTime, 
+                // Build the header of the content file
+                builder.Append(regionName?.Name ?? "Unknown Region");
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+
+                // User selects Total Volume
+                builder.Append(GetTotalVolume(directionCountSelect,
+                    startTime, endTime,
                  individualCategorySelect, individualCategoriesList
-                 );
-                return Content(x);
+                 ));
+                return Content(builder.ToString());
             }
             else
             {
+                // Build the header of the content file
+                builder.Append(regionName?.Name ?? "Unknown Region");
+                builder.Append(' ');
+                builder.Append(surveyYear?.Year);
+                builder.AppendLine();
+
                 // User selects fifteen minute interval.
-                string x = GetFifteenMinuteInterval(directionCountSelect, 
+                builder.Append(GetFifteenMinuteInterval(directionCountSelect, 
                     startTime,endTime, 
                  individualCategorySelect, individualCategoriesList
-                 );
-                return Content(x);
+                 ));
+                return Content(builder.ToString());
             }
         }
 
@@ -259,16 +285,23 @@ namespace CCDRS.Pages
                                 && stationcount.Time >= startTime & stationcount.Time <= endTime
                                 && individualCategorySelect.Contains(vehiclecount.Id)
                             group new { screenline, stationcount, vehicle, vehiclecount, station }
-                            by new { screenline.SlineCode, vehicle.Name, vehiclecount.Occupancy, vehiclecount.Id, station.Direction }
+                            by new { screenline.SlineCode, vehicle.Name, vehiclecount.Occupancy, 
+                                vehiclecount.Id, station.Direction, stationcount.Time }
                             into grp
                             select new
                             {
                                 SlineCode = grp.Key.SlineCode,
                                 Observations = grp.Sum(x => x.stationcount.Observation),
                                 VehicleCountTypeId = grp.Key.Id,
-                                Direction = grp.Key.Direction
+                                Direction = grp.Key.Direction,
+                                Time = grp.Key.Time
                             }
                       );
+
+            // Get the minimum and maximum timestamps from the selected dataset.
+            var minimumStartTime = Utility.CalculateStartTime(datalist.Min(x => x.Time));
+            var maximumEndTime = datalist.Max(x => x.Time);
+
             foreach (var item in datalist)
             {
                 if (!newlist.TryGetValue((item.SlineCode, item.Direction), out var counts))
@@ -298,9 +331,9 @@ namespace CCDRS.Pages
                 builder.Append(',');
                 builder.Append(item.direction);
                 builder.Append(',');
-                builder.Append(startTime);
+                builder.Append(minimumStartTime);
                 builder.Append(',');
-                builder.Append(endTime);
+                builder.Append(maximumEndTime);
                 foreach (var x in row)
                 {
                     builder.Append(',');
