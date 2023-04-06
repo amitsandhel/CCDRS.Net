@@ -175,7 +175,7 @@ namespace CCDRS.Pages
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
                 builder.AppendLine();
-                builder.Append("Station,StartTime,EndTime");
+                builder.Append("Station,Direction,StartTime,EndTime");
                 foreach (var item in individualCategorySelect)
                 {
                     var category = Utility.TechnologyNames.First(c => c.id == item);
@@ -198,7 +198,7 @@ namespace CCDRS.Pages
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
                 builder.AppendLine();
-                builder.Append("Station,StartTime,EndTime");
+                builder.Append("Station,Direction,StartTime,EndTime");
                 foreach (var item in individualCategorySelect)
                 {
                     var category = Utility.TechnologyNames.First(c => c.id == item);
@@ -231,7 +231,7 @@ namespace CCDRS.Pages
             int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList)
         {
             // Dictionary of station_count records with a key of the tuple of station code and time and an array of observations. 
-            Dictionary<(string stationName, int time), int[]> newlist = new();
+            Dictionary<(string stationName, int time, char direction), int[]> newlist = new();
 
             // Executes query and returns all station count data 
             var dataList = (from stationCounts in _context.StationCountObservations
@@ -251,14 +251,15 @@ namespace CCDRS.Pages
                                 stations.StationCode,
                                 Time = stationCounts.Time,
                                 Observations = stationCounts.Observation,
-                                VehicleCountTypeId = vehicleCountTypes.Id
+                                VehicleCountTypeId = vehicleCountTypes.Id,
+                                Direction = stations.Direction
                             }
                       );
             foreach (var item in dataList)
             {
-                if (!newlist.TryGetValue((item.StationCode, item.Time), out var counts))
+                if (!newlist.TryGetValue((item.StationCode, item.Time, item.Direction), out var counts))
                 {
-                    newlist[(item.StationCode, item.Time)] = counts = new int[individualCategorySelect.Length];
+                    newlist[(item.StationCode, item.Time, item.Direction)] = counts = new int[individualCategorySelect.Length];
                 }
                 counts[Array.IndexOf(individualCategorySelect, item.VehicleCountTypeId)] += item.Observations;
             }
@@ -273,6 +274,8 @@ namespace CCDRS.Pages
                 int starttime = Utility.CalculateStartTime(item.time);
                 var row = newlist[item];
                 builder.Append(item.stationName);
+                builder.Append(',');
+                builder.Append(item.direction);
                 builder.Append(',');
                 builder.Append(starttime);
                 builder.Append(',');
@@ -303,7 +306,7 @@ namespace CCDRS.Pages
             )
         {
             // Dictionary of station_count records with a key of station code and an array of observations. 
-            Dictionary<string, int[]> newlist = new();
+            Dictionary<(string station, char direction), int[]> newlist = new();
 
             // Executes query and returns all station count data
             var dataList = (from stationCounts in _context.StationCountObservations
@@ -320,7 +323,7 @@ namespace CCDRS.Pages
                                 individualCategorySelect.Contains(vehicleCountTypes.Id)
                             group new { stationCounts, vehicleCountTypes, stations, vehicles } 
                             by new { stations.StationCode, vehicles.Name, vehicleCountTypes.Occupancy, 
-                                vehicleCountTypes.Id, stationCounts.Time }
+                                vehicleCountTypes.Id, stationCounts.Time, stations.Direction }
                             into groupedBystationCountObservations
                             select new
                             {
@@ -328,7 +331,8 @@ namespace CCDRS.Pages
                                 Observations = groupedBystationCountObservations.Sum(x => x.stationCounts.Observation),
                                 VehicleCountTypeId = groupedBystationCountObservations.Key.Id,
                                 groupedBystationCountObservations.Key.Occupancy,
-                                Time = groupedBystationCountObservations.Key.Time
+                                Time = groupedBystationCountObservations.Key.Time,
+                                Direction = groupedBystationCountObservations.Key.Direction
                             }
                       );
 
@@ -338,9 +342,9 @@ namespace CCDRS.Pages
 
             foreach (var item in dataList)
             {
-                if (!newlist.TryGetValue(item.Station, out var counts))
+                if (!newlist.TryGetValue((item.Station, item.Direction), out var counts))
                 {
-                    newlist[item.Station] = counts = new int[individualCategorySelect.Length];
+                    newlist[(item.Station, item.Direction)] = counts = new int[individualCategorySelect.Length];
                 }
                 counts[Array.IndexOf(individualCategorySelect, item.VehicleCountTypeId)] += item.Observations;
             }
@@ -349,7 +353,9 @@ namespace CCDRS.Pages
             foreach (var item in newlist.Keys.OrderBy(x => x))
             {
                 var row = newlist[item];
-                builder.Append(item);
+                builder.Append(item.station);
+                builder.Append(',');
+                builder.Append(item.direction);
                 builder.Append(',');
                 builder.Append(minimumStartTime);
                 builder.Append(',');
