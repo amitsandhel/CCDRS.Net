@@ -4,6 +4,9 @@
 }
 <body>
     <h1>Specific Screenline for @ViewData["RegionName"]  @ViewData["SurveyYear"] </h1>
+    <div style="margin-bottom:30px; margin-top:30px">
+        @Html.Raw(ViewData["SurveyNotes"])
+    </div>
     <form method="post">
         <div style="margin-bottom:30px; margin-top:30px">
             <select class="screenlineList" name="SelectedScreenlines" asp-items="Model.SelectedScreenlines" multiple="multiple"></select>

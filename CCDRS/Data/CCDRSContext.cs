@@ -120,6 +120,7 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.RegionId).HasColumnName("region_id");
             entity.Property(e => e.Year).HasColumnName("year");
+            entity.Property(e => e.Notes).HasColumnName("notes");
 
             entity.HasOne(d => d.Region).WithMany(p => p.Surveys)
                 .HasForeignKey(d => d.RegionId)

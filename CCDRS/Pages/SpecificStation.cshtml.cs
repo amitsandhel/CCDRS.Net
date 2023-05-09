@@ -102,6 +102,9 @@ namespace CCDRS.Pages
             // Bind the local variable to the ViewData to display to the front-end
             ViewData["SurveyYear"] = surveyYear?.Year;
 
+            // Bind the survey notes to the viewdata to display the notes to the front-end page.
+            ViewData["SurveyNotes"] = surveyYear?.Notes;
+
             // Query station table to return a list of all stations associated with a given region.
             if (_context.Stations is not null)
             {

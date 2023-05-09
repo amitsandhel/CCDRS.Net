@@ -5,6 +5,9 @@
 
 <body>
     <h1>Specific Station for @ViewData["RegionName"] @ViewData["SurveyYear"] </h1>
+    <div style="margin-bottom:30px; margin-top:30px">
+        @Html.Raw(ViewData["SurveyNotes"])
+    </div>
     <form method="post">
         <div style="margin-bottom:30px; margin-top:30px">
             <select class="stationList" name="SelectedStations" asp-items="Model.StationsSelectList" multiple="multiple"></select>

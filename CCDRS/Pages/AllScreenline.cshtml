@@ -5,6 +5,9 @@
 
 <body>
     <h1>All Screenlines for @ViewData["RegionName"]  @ViewData["SurveyYear"] </h1>
+    <div style="margin-bottom:30px; margin-top:30px">
+        @Html.Raw(ViewData["SurveyNotes"])
+    </div>
     <form method="post">
         <partial name="/Pages/Shared/_CCDRenderPartial.cshtml" />
 
