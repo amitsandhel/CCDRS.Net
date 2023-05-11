@@ -5,9 +5,14 @@
 
 <body>
     <h1>All Stations for @ViewData["RegionName"] @ViewData["SurveyYear"] </h1>
-    <div style="margin-bottom:30px; margin-top:30px">
-        @Html.Raw(ViewData["SurveyNotes"])
+
+    <div class="sitesection">
+        <button type="button" class="btn btn-primary surveyInformationExpandBtn">Survey Information</button>
+        <div id="demo" class="surveyInformationContent">
+            @Html.Raw(ViewData["SurveyNotes"])
+        </div>
     </div>
+
     <form method="post">
         <partial name="/Pages/Shared/_CCDRenderPartial.cshtml" />
         <input type="hidden" id="regionId" name="regionId" asp-for="RegionId" />
@@ -15,3 +20,15 @@
     </form>
 
 </body>
+
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            // Buttons to show and hide the survey information
+            $('.surveyInformationExpandBtn').click(function () {
+                $('.surveyInformationContent').slideToggle('slow');
+            });
+        });
+    </script>
+    }

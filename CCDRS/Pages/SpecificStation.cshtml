@@ -5,9 +5,14 @@
 
 <body>
     <h1>Specific Station for @ViewData["RegionName"] @ViewData["SurveyYear"] </h1>
-    <div style="margin-bottom:30px; margin-top:30px">
-        @Html.Raw(ViewData["SurveyNotes"])
+
+    <div class="sitesection">
+        <button type="button" class="btn btn-primary surveyInformationExpandBtn">Survey Information</button>
+        <div id="demo" class="surveyInformationContent">
+            @Html.Raw(ViewData["SurveyNotes"])
+        </div>
     </div>
+
     <form method="post">
         <div style="margin-bottom:30px; margin-top:30px">
             <select class="stationList" name="SelectedStations" asp-items="Model.StationsSelectList" multiple="multiple"></select>
@@ -23,5 +28,11 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('.stationList').select2();
+    });
+    $(function () {
+        // Buttons to show and hide the survey information
+        $('.surveyInformationExpandBtn').click(function () {
+            $('.surveyInformationContent').slideToggle('slow');
+        });
     });
 </script>

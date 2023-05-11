@@ -4,9 +4,14 @@
 }
 <body>
     <h1>Specific Screenline for @ViewData["RegionName"]  @ViewData["SurveyYear"] </h1>
-    <div style="margin-bottom:30px; margin-top:30px">
-        @Html.Raw(ViewData["SurveyNotes"])
+
+    <div class="sitesection">
+        <button type="button" class="btn btn-primary surveyInformationExpandBtn">Survey Information</button>
+        <div id="demo" class="surveyInformationContent">
+            @Html.Raw(ViewData["SurveyNotes"])
+        </div>
     </div>
+
     <form method="post">
         <div style="margin-bottom:30px; margin-top:30px">
             <select class="screenlineList" name="SelectedScreenlines" asp-items="Model.SelectedScreenlines" multiple="multiple"></select>
@@ -22,5 +27,11 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('.screenlineList').select2();
+    });
+    $(function () {
+        // Buttons to show and hide the survey information
+        $('.surveyInformationExpandBtn').click(function () {
+            $('.surveyInformationContent').slideToggle('slow');
+        });
     });
 </script>

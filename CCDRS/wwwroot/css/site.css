@@ -75,3 +75,8 @@ input[type='radio']:checked:after {
 .select2-selection__choice span {
     color: black;
 }
+
+/*To hide the survey information on page load as default feature. */
+div.surveyInformationContent {
+    display: none;
+}
