@@ -39,6 +39,11 @@ public partial class Survey
     public int RegionId { get; set; }
 
     /// <summary>
+    /// Survey notes and calculations for total vehicle and total pedestrian. 
+    /// </summary>
+    public string Notes { get; set; } = string.Empty;
+
+    /// <summary>
     /// Modify Region Method since survey has a foreign key to region table. 
     /// </summary>
     public virtual Region Region { get; set; } = null!;

@@ -94,13 +94,14 @@ public partial class CCDRSManagerModelRepository
     /// </summary>
     /// <param name="regionId">Primary serial key of regionId as an integer.</param>
     /// <param name="surveyYear">Year of survey e.g. 2022.</param>
-    public void AddSurveyData(int regionId, int surveyYear)
+    public void AddSurveyData(int regionId, int surveyYear, string surveyNotes)
     {
         // Create a new survey object.
         Survey survey = new()
         {
             RegionId = regionId,
-            Year = surveyYear
+            Year = surveyYear,
+            Notes = surveyNotes
         };
         _context.Surveys.Add(survey);
         // Save the context to the database.

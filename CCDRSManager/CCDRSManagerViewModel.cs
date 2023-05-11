@@ -177,6 +177,20 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
         }
     }
 
+    public string _surveyNotes = string.Empty;
+
+    public string SurveyNotes
+    {
+        get
+        {
+            return _surveyNotes;
+        }
+        set
+        {
+            _surveyNotes = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SurveyNotes)));
+        }
+    }
 
     private readonly ObservableCollection<VehicleCountTypeModel> _vehicleCountTypes;
 
@@ -226,7 +240,7 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     /// </summary>
     public void AddSurveyData()
     {
-        _ccdrsRepository.AddSurveyData(RegionId, SurveyYear);
+        _ccdrsRepository.AddSurveyData(RegionId, SurveyYear, SurveyNotes);
     }
 
     /// <summary>

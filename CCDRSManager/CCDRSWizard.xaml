@@ -35,6 +35,13 @@
                     <TextBox x:Name="SurveyBox" 
                      PreviewTextInput="PreviewTextInput"
                      Text="{Binding SurveyYear}" />
+                    <Label>Survey Information and Notes</Label>
+                    <TextBox x:Name="SurveyInformation"
+                             TextWrapping="Wrap"
+                             Height="275"
+                             VerticalScrollBarVisibility="Visible"
+                             AcceptsReturn="True"
+                             Text="{Binding SurveyNotes}"/>
                 </StackPanel>
             </xctk:WizardPage>
             
