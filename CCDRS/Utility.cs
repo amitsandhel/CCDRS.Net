@@ -160,7 +160,7 @@ namespace CCDRS
         /// </summary>
         /// <param name="DMGTime">the DMG Start Time</param>
         /// <returns>An integer of the minutes</returns>
-        private static int FromDMGTimeToMinutes(int DMGTime)
+        public static int FromDMGTimeToMinutes(int DMGTime)
         {
             return (((int)(DMGTime / 100) * 60) + (DMGTime % 100));
         }
@@ -170,7 +170,7 @@ namespace CCDRS
         /// </summary>
         /// <param name="startTimeMinutes"></param>
         /// <returns></returns>
-        private static int MinutesToDMGTime(int startTimeMinutes)
+        internal static int MinutesToDMGTime(int startTimeMinutes)
         {
             return ((startTimeMinutes / 60) * 100) + (startTimeMinutes % 60);
         }

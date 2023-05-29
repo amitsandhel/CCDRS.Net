@@ -23,12 +23,12 @@ public partial class ScreenlineStation
     /// <summary>
     /// Foreign key to the screenline table associated to the screenline primary key attribute
     /// </summary>
-    public int? ScreenlineId { get; set; }
+    public int ScreenlineId { get; set; }
 
     /// <summary>
     /// Foreign key to the station table associated to the station primary key attribute
     /// </summary>
-    public int? StationId { get; set; }
+    public int StationId { get; set; }
 
     /// <summary>
     ///  Modify Screenline Class.

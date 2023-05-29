@@ -75,7 +75,7 @@ namespace CCDRS.Pages
         {
             var DataList = _context.Surveys.
                 Where(s => s.RegionId == regionId)
-                .ToList();
+                .OrderBy(s => s.Id).ToList();
             return new JsonResult(DataList);
         }
 

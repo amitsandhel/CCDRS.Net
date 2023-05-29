@@ -14,6 +14,7 @@
 */
 
 using CCDRS.Model;
+using DnsClient.Protocol;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -257,7 +258,7 @@ namespace CCDRS.Pages
                                 VehicleCountTypeId = vehicleCountTypes.Id,
                                 Direction = stations.Direction
                             }
-                      );
+                      ).ToList();
             foreach (var item in dataList)
             {
                 if (!newlist.TryGetValue((item.StationCode, item.Time, item.Direction), out var counts))
@@ -266,6 +267,9 @@ namespace CCDRS.Pages
                 }
                 counts[Array.IndexOf(individualCategorySelect, item.VehicleCountTypeId)] += item.Observations;
             }
+
+            // Get the total records we need to have saved as a dictionary.
+            var records = 1;
 
             var builder = new StringBuilder();
             foreach (var item in from x in newlist.Keys
@@ -279,6 +283,8 @@ namespace CCDRS.Pages
                 builder.Append(item.stationName);
                 builder.Append(',');
                 builder.Append(item.direction);
+                builder.Append(',');
+                builder.Append(records);
                 builder.Append(',');
                 builder.Append(starttime);
                 builder.Append(',');
@@ -337,11 +343,19 @@ namespace CCDRS.Pages
                                 Time = groupedBystationCountObservations.Key.Time,
                                 Direction = groupedBystationCountObservations.Key.Direction
                             }
-                      );
+                      ).ToList();
 
             // Get the minimum and maximum timestamps from the selected dataset.
             var minimumStartTime = Utility.CalculateStartTime(dataList.Min(x => x.Time));
             var maximumEndTime = dataList.Max(x => x.Time);
+            // Get the total records we need to have saved as a dictionary.
+            var records = dataList.GroupBy(x => x.Station)
+                            .Select(group => new
+                            {
+                                stationName = group.Key,
+                                records = ((group.Max(s => Utility.FromDMGTimeToMinutes(s.Time))
+                                - group.Min(s => Utility.FromDMGTimeToMinutes(s.Time))) / 15) + 1
+                            }).ToDictionary(g => g.stationName, g => g.records);
 
             foreach (var item in dataList)
             {
@@ -359,6 +373,8 @@ namespace CCDRS.Pages
                 builder.Append(item.station);
                 builder.Append(',');
                 builder.Append(item.direction);
+                builder.Append(',');
+                builder.Append(records[item.station]);
                 builder.Append(',');
                 builder.Append(minimumStartTime);
                 builder.Append(',');
