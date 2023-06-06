@@ -188,7 +188,7 @@ namespace CCDRS.Pages
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
                 builder.AppendLine();
-                builder.Append("Sline,Time,Direction,StationCount,SumOfRecords");
+                builder.Append("Sline,Direction,StationCount,SumOfRecords,StartTime,EndTime");
                 foreach (var item in individualCategorySelect)
                 {
                     var category = Utility.TechnologyNames.First(c => c.id == item);

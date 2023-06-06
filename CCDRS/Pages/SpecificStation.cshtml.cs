@@ -14,15 +14,11 @@
 */
 
 using CCDRS.Model;
-using DnsClient.Protocol;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Linq;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CCDRS.Pages
 {
@@ -179,7 +175,7 @@ namespace CCDRS.Pages
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
                 builder.AppendLine();
-                builder.Append("Station,Direction,StartTime,EndTime");
+                builder.Append("Station,Direction,Records,StartTime,EndTime");
                 foreach (var item in individualCategorySelect)
                 {
                     var category = Utility.TechnologyNames.First(c => c.id == item);
@@ -202,7 +198,7 @@ namespace CCDRS.Pages
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
                 builder.AppendLine();
-                builder.Append("Station,Direction,StartTime,EndTime");
+                builder.Append("Station,Direction,Records,StartTime,EndTime");
                 foreach (var item in individualCategorySelect)
                 {
                     var category = Utility.TechnologyNames.First(c => c.id == item);
