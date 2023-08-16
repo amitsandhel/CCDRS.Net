@@ -268,6 +268,7 @@ public partial class CCDRSContext : DbContext
             entity.Property(e => e.VehicleCountTypeId).HasColumnName("vehicle_count_type_id");
             entity.Property(e => e.VehicleName).HasColumnName("vehicle_name");
             entity.Property(e => e.Year).HasColumnName("year");
+            entity.Property(e => e.DisplayOrder).HasColumnName("display_order");
         });
 
         modelBuilder.Entity<ScreenlineStation>(entity =>

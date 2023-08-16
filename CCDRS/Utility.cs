@@ -152,7 +152,7 @@ namespace CCDRS
             return IndividualCategories.Where(s => s.RegionId == regionId &
                                s.SurveyId == selectedSurveyId &
                                s.CountType == countType
-                            ).ToList();
+                            ).OrderBy(s => s.DisplayOrder).ToList();
         }
 
         /// <summary>
