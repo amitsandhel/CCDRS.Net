@@ -50,7 +50,7 @@ namespace CCDRS.Pages
             // run the database query to output a list all regions
             if (_context.Regions is not null)
             {
-                RegionList = await _context.Regions.ToListAsync();
+                RegionList = await _context.Regions.OrderBy(r => r.Name).ToListAsync();
             }
 
             // run the database query to output a list of all survey
