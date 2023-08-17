@@ -72,9 +72,4 @@ public partial class IndividualCategory
     /// Foreign key to the survey table associated to the survey primary key attribute
     /// </summary>
     public int SurveyId { get; set; }
-
-    /// <summary>
-    /// Display order number used to determine the hierarchy of the technologies to display in the list.
-    /// </summary>
-    public int DisplayOrder { get; set; }
 }
