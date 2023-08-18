@@ -123,14 +123,17 @@ namespace CCDRS.Pages
             // Query individual_categories table to return various radiobutton options.
             if (_context.IndividualCategories != null)
             {
-                // List all total vehicle count options
-                VehicleCountTypeList = Utility.GetTotalVehicleCounts(RegionId, SelectedSurveyId);
+                // List all the unique technologies available for a given survey.
+                IList<IndividualCategory> technologies = IndividualCategory.GetIndividualCategoriesBasedOnSurvey(SelectedSurveyId, _context);
 
-                // List all total person count options
-                PersonCountTypeList = Utility.GetTotalPersonCounts(RegionId, SelectedSurveyId);
+                // List all total vehicle count options
+                VehicleCountTypeList = IndividualCategory.GetTotalVehicleCounts(technologies);
+
+                //// List all total person count options
+                PersonCountTypeList = IndividualCategory.GetTotalPersonCounts(technologies);
 
                 // List all technologies options
-                IndividualCategoriesList = Utility.GetTechnologyCounts(RegionId, SelectedSurveyId);
+                IndividualCategoriesList = IndividualCategory.GetTechnologyCounts(technologies);
             }
         }
 
