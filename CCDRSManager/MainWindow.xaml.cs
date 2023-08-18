@@ -56,5 +56,11 @@ namespace CCDRSManager
             DeleteSurveyWindow window = new();
             window.ShowDialog();
         }
+
+        private void SortIndividualCategories(object sender, RoutedEventArgs e)
+        {
+            SortVehicle dialog = new();
+            dialog.ShowDialog();
+        }
     }
 }

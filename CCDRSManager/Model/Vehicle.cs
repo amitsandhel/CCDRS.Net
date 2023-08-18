@@ -34,4 +34,9 @@ public partial class Vehicle
     /// Collection of vehicle_count_types associated with the vehicle
     /// </summary>
     public virtual ICollection<VehicleCountType> VehicleCountTypes { get; } = new List<VehicleCountType>();
+
+    /// <summary>
+    /// Display order number used to determine the hierarchy of the technologies to display in the list.
+    /// </summary>
+    public int DisplayOrder { get; set; }
 }

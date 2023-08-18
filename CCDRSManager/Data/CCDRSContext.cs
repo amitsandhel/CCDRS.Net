@@ -146,6 +146,7 @@ public partial class CCDRSContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.DisplayOrder).HasColumnName("display_order");
         });
 
         // Association of VehicleCountType class to vehicle_count_type database attributes.
@@ -258,25 +259,6 @@ public partial class CCDRSContext : DbContext
                 .HasForeignKey(d => d.VehicleCountTypeId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("station_count_observation_vehicle_count_type_id_fkey");
-        });
-
-        // Association of IndividualCategoryview to individual_categories attributes.
-        modelBuilder.Entity<IndividualCategory>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("individual_categories_pkey");
-
-            entity.ToTable("individual_categories");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CountType).HasColumnName("count_type");
-            entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Occupancy).HasColumnName("occupancy");
-            entity.Property(e => e.RegionId).HasColumnName("region_id");
-            entity.Property(e => e.RegionName).HasColumnName("region_name");
-            entity.Property(e => e.SurveyId).HasColumnName("survey_id");
-            entity.Property(e => e.VehicleCountTypeId).HasColumnName("vehicle_count_type_id");
-            entity.Property(e => e.VehicleName).HasColumnName("vehicle_name");
-            entity.Property(e => e.Year).HasColumnName("year");
         });
 
         modelBuilder.Entity<ScreenlineStation>(entity =>
