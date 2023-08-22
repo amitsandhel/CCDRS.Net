@@ -5,13 +5,51 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CCDRSManager"
         mc:Ignorable="d"
-        Title="SortVehicle" Height="450" Width="800">
+        WindowStyle="ToolWindow"
+        ResizeMode="NoResize"
+        Title="Sort Vehicle" Height="450" Width="300">
     <Window.DataContext>
         <local:CCDRSManagerViewModel />
     </Window.DataContext>
-    
+
     <Grid>
-        <TextBlock Text="sort vehicle " />
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <ListView x:Name="SortVehicleList" ItemsSource="{Binding SortVehicles}" 
+                          SelectedValue="Id" Grid.RowSpan="2" >
+                    <ListView.View>
+                        <GridView AllowsColumnReorder="true" ColumnHeaderToolTip="Individual Category Information">
+                            <GridViewColumn DisplayMemberBinding="{Binding Path=Name}" Header="Vehicle" Width="100" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+                <Button Content="Up" Margin="5" Grid.Row="0" Grid.Column="1" Click="MoveVehicleUp" />
+                <Button Content="Down" Margin="5" Grid.Row="1" Grid.Column="1" Click="MoveVehicleDown" />
+            </Grid>
+
+        </GroupBox>
+
+        <Button Content="Save" Margin="5" Grid.Row="2" Grid.Column="1" Width="100" Height="30" Click="SaveSortedVehicleData" />
+        <Button Content="Cancel" Margin="5" Grid.Row="2" Grid.Column="2" Width="100" Height="30"  Click="Cancel" />
     </Grid>
 </Window>

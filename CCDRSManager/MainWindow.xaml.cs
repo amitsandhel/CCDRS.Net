@@ -59,7 +59,10 @@ namespace CCDRSManager
 
         private void SortIndividualCategories(object sender, RoutedEventArgs e)
         {
-            SortVehicle dialog = new();
+            SortVehicle dialog = new()
+            {
+                Owner = this
+            };
             dialog.ShowDialog();
         }
     }

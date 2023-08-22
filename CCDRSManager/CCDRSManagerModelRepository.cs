@@ -31,6 +31,7 @@ public partial class CCDRSManagerModelRepository
     private readonly CCDRSContext _context;
     private readonly ObservableCollection<RegionModel> _regionsModel;
     private readonly ObservableCollection<VehicleCountTypeModel> _vehiclesModel;
+    private readonly ObservableCollection<SortVehicleModel> _sortVehiclesModel;
 
     // Initialize the CCDRS class
     public CCDRSManagerModelRepository(CCDRSContext context)
@@ -38,6 +39,7 @@ public partial class CCDRSManagerModelRepository
         _context = context;
         _regionsModel = new ObservableCollection<RegionModel>(_context.Regions.Select(r => new RegionModel(r)));
         _vehiclesModel = new ObservableCollection<VehicleCountTypeModel>(_context.VehicleCountTypes.Include(vc => vc.Vehicle).Select(r => new VehicleCountTypeModel(r)));
+        _sortVehiclesModel = new ObservableCollection<SortVehicleModel>(_context.Vehicles.OrderBy(s => s.DisplayOrder).Select(r => new SortVehicleModel(r)));
     }
 
     /// <summary>
@@ -48,9 +50,20 @@ public partial class CCDRSManagerModelRepository
         get => new(_regionsModel);
     }
 
+    /// <summary>
+    /// Property to get a list of all VehicleCountTypes that exist in the database.
+    /// </summary>
     public ObservableCollection<VehicleCountTypeModel> VehicleCountTypeModels
     {
         get => new(_vehiclesModel);
+    }
+    
+    /// <summary>
+    /// Property to get a list of all Vehicles that exist in the database.
+    /// </summary>
+    public ObservableCollection<SortVehicleModel> SortVehicleModels
+    {
+        get => new(_sortVehiclesModel);
     }
 
     /// <summary>
@@ -432,56 +445,9 @@ public partial class CCDRSManagerModelRepository
             }
 
         }
-        // Update the individaul_categories table to display the correct technologies on webpage.
-        UpdateIndividualCategoriesTable(regionId, surveyYear, vehicleCountTypeList);
 
         // Save the context to the database.
         Save();
-    }
-
-    /// <summary>
-    /// Update the individual_categories table with the correct technologies to display to the html 
-    /// front end.
-    /// </summary>
-    /// <param name="regionId">Primary serial key of region as an int.</param>
-    /// <param name="surveyYear">Year of survey e.g. 2016</param>
-    /// <param name="vehicleCountTypes">List of VehicleCountTypes for which observations were collected for the given 
-    /// specific survey.</param>
-    public void UpdateIndividualCategoriesTable(int regionId, int surveyYear, List<VehicleCountType> vehicleCountTypes)
-    {
-        var region = _context.Regions.Where(r => r.Id == regionId).First();
-        var survey = _context.Surveys.Where(s => s.Year == surveyYear && s.RegionId == regionId).First();
-
-        // Delete the individual category of specific survey of data that was previously uploaded.
-        List<IndividualCategory> individualCategories = (from individualcategories in _context.IndividualCategories
-                                                         where
-                                                             individualcategories.RegionId == regionId
-                                                             && individualcategories.Year == surveyYear
-                                                         select
-                                                             individualcategories).ToList();
-        _context.IndividualCategories.RemoveRange(individualCategories);
-
-        // Save the context to the database.
-        Save();
-
-        // Iterate over the new vehicle_count_type list and build a new set of individual categories
-        foreach (VehicleCountType vehicleCountType in vehicleCountTypes)
-        {
-            var vehicle = _context.Vehicles.Where(v => v.Id == vehicleCountType.VehicleId).First();
-            IndividualCategory iC = new()
-            {
-                RegionId = region.Id,
-                RegionName = region.Name,
-                SurveyId = survey.Id,
-                Year = survey.Year,
-                CountType = vehicleCountType.CountType,
-                Occupancy = vehicleCountType.Occupancy,
-                Description = vehicleCountType.Description,
-                VehicleCountTypeId = vehicleCountType.Id,
-                VehicleName = vehicle.Name
-            };
-            _context.IndividualCategories.Add(iC);
-        }
     }
 
     /// <summary>
@@ -836,6 +802,22 @@ public partial class CCDRSManagerModelRepository
         }
         refError = string.Empty;
         return true;
+    }
+
+    /// <summary>
+    /// Save the new display order of the Vehicle table.
+    /// </summary>
+    /// <param name="newSortedVehicles">Collection of the SortVehicle model</param>
+    public void SaveVehicleOrder(ObservableCollection<SortVehicleModel> newSortedVehicles)
+    {
+        for(int i = 0; i < newSortedVehicles.Count; i++)
+        {
+            Vehicle updateVehicle = _context.Vehicles.First(v => v.Id == newSortedVehicles[i].Id);
+            updateVehicle.DisplayOrder = i;
+        }
+
+        // Save the context to the database.
+        Save();
     }
 
     /// <summary>

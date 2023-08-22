@@ -13,8 +13,10 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using CCDRSManager.Model;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Security.Cryptography.X509Certificates;
 
 namespace CCDRSManager;
 
@@ -200,6 +202,15 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public ReadOnlyObservableCollection<VehicleCountTypeModel> VehicleCountTypes
         => new(_vehicleCountTypes);
 
+
+    private readonly ObservableCollection<SortVehicleModel> _sortVehicles;
+    
+    /// <summary>
+    /// Collection of Vehicle objects to reorder the display order to display on the UI page.
+    /// </summary>
+    public ReadOnlyObservableCollection<SortVehicleModel> SortVehicles
+        => new(_sortVehicles);
+
     /// <summary>
     /// Controls access to the CCDRS model repository.
     /// </summary>
@@ -209,6 +220,8 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
             ?? new(new ObservableCollection<RegionModel>());
         _vehicleCountTypes = _ccdrsRepository?.VehicleCountTypeModels
             ?? new(new ObservableCollection<VehicleCountTypeModel>());
+        _sortVehicles = _ccdrsRepository?.SortVehicleModels 
+            ?? new(new ObservableCollection<SortVehicleModel>());
     }
 
     /// <summary>
@@ -627,5 +640,66 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
             SetTextBlockData("red", message);
             return false;
         }
+    }
+
+
+    private SortVehicleModel? _sortVehicleModel;
+
+    /// <summary>
+    /// ServiceVehicleModel Property to get and set the display order of the vehicle.
+    /// </summary>
+    public SortVehicleModel? SortVehicleModel
+    {
+        get
+        {
+            return _sortVehicleModel;
+        }
+        set
+        {
+            _sortVehicleModel = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SortVehicleModel)));
+        }
+    }
+
+
+    /// <summary>
+    /// Move the vehicle up the collection list.
+    /// </summary>
+    /// <param name="vehicleIndex">Index of selected vehicle to move.</param>
+    public void MoveTechnologyUp(int vehicleIndex)
+    {
+        int newIndex = vehicleIndex - 1;
+        if (newIndex > 0)
+        {
+            _sortVehicles.Move(vehicleIndex, newIndex);
+        }
+        
+    }
+
+    /// <summary>
+    /// Move the vehicle down the collection list.
+    /// </summary>
+    /// <param name="vehicleIndex">Index of selected value to move.</param>
+    public void MoveTechnologyDown(int vehicleIndex)
+    {
+        //Make sure user did select the a vehicle.
+        if (vehicleIndex >-1)
+        {
+            //check if its zero then don't allow user to move the index
+            int newIndex = vehicleIndex + 1;
+            if (newIndex < _sortVehicles.Count)
+            {
+                _sortVehicles.Move(vehicleIndex, newIndex);
+            }
+        }
+        
+    }
+
+    /// <summary>
+    /// Save the new vehicle order to the database.
+    /// </summary>
+    public void SaveVehicleOrder()
+    {
+        _ccdrsRepository.SaveVehicleOrder(_sortVehicles);
     }
 }
