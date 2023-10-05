@@ -145,7 +145,10 @@ public partial class CCDRSManagerModelRepository
             Station newStation = new()
             {
                 StationCode = stationCode,
-                Description = stationDescription
+                Description = stationDescription,
+                RegionId = regionId,
+                StationNum = int.Parse(stationCode[..^1]),
+                Direction = char.Parse(stationCode[^1..])
             };
             _context.Stations.Add(newStation);
             // Save the context to the database.
