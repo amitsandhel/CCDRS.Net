@@ -754,7 +754,7 @@ public partial class CCDRSManagerModelRepository
         // read the screenline csv file
         using var readFile = new StreamReader(screenlineFileName);
         string? line;
-        List<string> stationCodeList = new() { };
+        List<(string, string)> screenlineCodeList = new() { };
         int lineNumber = 0;
         refError = string.Empty;
 
@@ -785,16 +785,15 @@ public partial class CCDRSManagerModelRepository
                     refError = "Missing screenline code " + screenlineFileName + " on line " + lineNumber + " Please Reupload \n";
                     return false;
                 }
-                
                 // Duplicate data exists
-                if (stationCodeList.Contains(stationCode))
+                if (screenlineCodeList.Any(tuple => tuple.Item1 == slineCode && tuple.Item2 == stationCode))
                 {
-                    refError = "Duplicate station code in file " + screenlineFileName + "on line " + lineNumber + "please Reupload \n";
+                    refError = "Duplicate data in file " + screenlineFileName + "on line " + lineNumber + " please Reupload \n";
                     return false;
                 }
                 else
                 {
-                    stationCodeList.Add(stationCode);
+                    screenlineCodeList.Add((slineCode, stationCode));
                 }
             }
             else
