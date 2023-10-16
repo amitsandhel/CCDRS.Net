@@ -369,6 +369,11 @@ namespace CCDRS.Pages
                                 Time = grp.Key.Time
                             }
                       ).ToList();
+            
+            if (datalist.Count <= 0)
+            {
+                return string.Empty;
+            }
 
             // Get the minimum and maximum timestamps from the selected dataset.
             var minimumStartTime = Utility.CalculateStartTime(datalist.Min(x => x.Time));
@@ -398,7 +403,6 @@ namespace CCDRS.Pages
                                  SumRecords = newgrp.Count()
                              }
                 ).ToDictionary(entry => (entry.Sline, entry.Direction), entry => entry.SumRecords);
-
             foreach (var item in datalist)
             {
                 if (!newlist.TryGetValue((item.SlineCode, item.Direction), out var counts))
