@@ -5,9 +5,11 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCDRS", "CCDRS\CCDRS.csproj", "{86765EA5-82B4-44F5-85B9-F138293A9B87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCDRSManager", "CCDRSManager\CCDRSManager.csproj", "{172FA2FB-C707-4ECD-A403-8DF4F71CB3A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCDRSManager", "CCDRSManager\CCDRSManager.csproj", "{172FA2FB-C707-4ECD-A403-8DF4F71CB3A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCDRSManagerTests", "CCDRSManagerTests\CCDRSManagerTests.csproj", "{63F82869-A38B-4C90-9B34-F0D1414B12D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCDRSManagerTests", "CCDRSManagerTests\CCDRSManagerTests.csproj", "{63F82869-A38B-4C90-9B34-F0D1414B12D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{AF49BCEC-1023-411E-AE85-F2EE98553E81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
