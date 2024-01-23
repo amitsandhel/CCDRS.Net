@@ -245,3 +245,6 @@ The individual_categories table is a table/view that is used by the ASP.Net Enti
 Framework Core to generate a list of all vehicles and their associated occupancy levels 
 with a human readable description. For example, 'light truck with 1 occupancy'.
 
+# CCDRS ManagerTool
+
+# Developer Notes
