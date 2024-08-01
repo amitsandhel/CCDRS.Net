@@ -226,7 +226,7 @@ namespace CCDRS.Pages
 
             var builder = new StringBuilder();
             // Build the header
-            builder.Append("Station,Direction,StartTime,EndTime");
+            builder.Append("Station,Direction,Records,StartTime,EndTime");
             foreach (var item in individualCategorySelect)
             {
                 var category = Utility.TechnologyNames.First(c => c.id == item);
