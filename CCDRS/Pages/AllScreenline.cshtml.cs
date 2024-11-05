@@ -273,7 +273,8 @@ namespace CCDRS.Pages
                 builder.Append(',');
                 builder.Append(item.direction);
                 builder.Append(',');
-                builder.Append(checkSums[(item.screenLineName, item.direction)]);
+                var count = Utility.GetStationCount(_context, RegionId, SelectedSurveyId, item.screenLineName);
+                builder.Append(count);
                 builder.Append(',');
                 builder.Append(checkSums[(item.screenLineName, item.direction)] * sumRecord);
                 builder.Append(",");
@@ -394,7 +395,8 @@ namespace CCDRS.Pages
                 builder.Append(',');
                 builder.Append(item.direction);
                 builder.Append(',');
-                builder.Append(checkSums[(item.screenlinename, item.direction)]);
+                var count = Utility.GetStationCount(_context, RegionId, SelectedSurveyId, item.screenlinename);
+                builder.Append(count);
                 builder.Append(',');
                 builder.Append(checkSums[(item.screenlinename, item.direction)] * sumRecord);
                 builder.Append(",");
