@@ -14,6 +14,7 @@
 */
 
 using CCDRS.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace CCDRS;
 
@@ -121,5 +122,42 @@ public static class Utility
         const int minutesToSubtract = 14;
         int res = FromDMGTimeToMinutes(dmgTime) - minutesToSubtract;
         return MinutesToDMGTime(res);
+    }
+
+    /// <summary>
+    /// Get the stations that were actually counted in a given CCDRS survey.
+    /// </summary>
+    /// <param name="context">instance of DB context service.</param>
+    /// <param name="regionId">int of selected regionId e.g. Toronto.</param>
+    /// <param name="surveyId">int of selected surveyId.</param>
+    /// <param name="slineCode">string of screenline.</param>
+    /// <returns>an int count of the number of stations that were counted for selected CCDRS survey.</returns>
+    public static int GetStationCount(CCDRS.Data.CCDRSContext context, int regionId, int surveyId, string slineCode)
+    {
+        var count = (from regions in context.Regions
+                     join surveys in context.Surveys on regions.Id equals surveys.RegionId
+                     join stations in context.Stations on regions.Id equals stations.RegionId
+                     join screenlines in context.Screenlines on regions.Id equals screenlines.RegionId
+                     join screenlinStations in context.ScreenlineStations on
+                     new { ScreenlineId = screenlines.Id, StationId = stations.Id }
+                     equals new { ScreenlineId = screenlinStations.ScreenlineId, StationId = screenlinStations.StationId }
+                     join surveystations in context.SurveyStations
+                     on new { StationId = stations.Id, SurveyId = surveys.Id }
+                     equals new { StationId = surveystations.StationId, SurveyId = surveystations.SurveyId }
+                     join stncounts in context.StationCountObservations on surveystations.Id equals stncounts.SurveyStationId
+                     where
+                     regions.Id == regionId
+                     && surveys.Id == surveyId
+                     && screenlines.SlineCode == slineCode
+                     group new { stations }
+                     by new { stations.Id }
+                   into newgrp
+                     select new
+                     {
+                         Station = newgrp.Key.Id
+                     }
+                     ).Distinct().Count();
+
+        return count;
     }
 }
