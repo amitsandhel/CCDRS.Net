@@ -131,8 +131,9 @@ public static class Utility
     /// <param name="regionId">int of selected regionId e.g. Toronto.</param>
     /// <param name="surveyId">int of selected surveyId.</param>
     /// <param name="slineCode">string of screenline.</param>
+    /// <param name="direction">direction of the selected station belonging to given screenline.</param>
     /// <returns>an int count of the number of stations that were counted for selected CCDRS survey.</returns>
-    public static int GetStationCount(CCDRS.Data.CCDRSContext context, int regionId, int surveyId, string slineCode)
+    public static int GetStationCount(CCDRS.Data.CCDRSContext context, int regionId, int surveyId, string slineCode, char direction)
     {
         var count = (from regions in context.Regions
                      join surveys in context.Surveys on regions.Id equals surveys.RegionId
@@ -149,6 +150,7 @@ public static class Utility
                      regions.Id == regionId
                      && surveys.Id == surveyId
                      && screenlines.SlineCode == slineCode
+                     & stations.Direction == direction
                      group new { stations }
                      by new { stations.Id }
                    into newgrp
