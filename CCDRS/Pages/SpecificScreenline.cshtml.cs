@@ -306,7 +306,7 @@ public class SpecificScreenlineModel : PageModel
             builder.Append(',');
             builder.Append(item.direction);
             builder.Append(',');
-            var count = Utility.GetStationCount(_context, RegionId, SelectedSurveyId, item.screenLineName);
+            var count = Utility.GetStationCount(_context, RegionId, SelectedSurveyId, item.screenLineName, item.direction);
             builder.Append(count);
             builder.Append(',');
             builder.Append(checkSums[(item.screenLineName, item.direction)] * sumRecord);
@@ -425,7 +425,7 @@ public class SpecificScreenlineModel : PageModel
             builder.Append(item.direction);
             builder.Append(',');
             // get the station count for screenline
-            var count = Utility.GetStationCount(_context, RegionId,  SelectedSurveyId, item.screenlinename);
+            var count = Utility.GetStationCount(_context, RegionId,  SelectedSurveyId, item.screenlinename, item.direction);
             builder.Append(count);
             builder.Append(',');
             builder.Append(checkSums[(item.screenlinename, item.direction)] * sumRecord);
