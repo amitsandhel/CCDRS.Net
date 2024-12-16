@@ -17,6 +17,7 @@ using CCDRS.Model;
 
 namespace CCDRS;
 using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 
 /// <summary>
@@ -205,6 +206,15 @@ public static class Utility
         context.UserActivityLogs.Add(userActivityLog);
         context.SaveChanges();
         context.ChangeTracker.Clear();
+    }
+
+    public static void SetUserName(HttpContext httpContext)
+    {
+        if (httpContext.User.Identity.IsAuthenticated == true)
+        {
+            string username = httpContext.User.Identity.Name;
+            httpContext.Session.SetString("Username", username);
+        }
     }
 
     /// <summary>

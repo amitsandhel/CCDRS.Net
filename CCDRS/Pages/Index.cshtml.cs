@@ -48,7 +48,8 @@ namespace CCDRS.Pages
         public async Task OnGet()
         {
             // configure session 
-            HttpContext.Session.SetString("Username", User.Identity.Name);
+            Utility.SetUserName(HttpContext);
+            //HttpContext.Session.SetString("Username", User.Identity.Name);
 
             // run the database query to output a list all regions
             if (_context.Regions is not null)
