@@ -169,6 +169,10 @@ namespace CCDRS.Pages
 
 
             var builder = new StringBuilder();
+
+            // Access session data
+            string username = Utility.GetUserName(HttpContext);
+
             // Check to see if user wants to calculate total volume or 15 minute intervals
             if (trafficVolumeRadioButtonSelect == 1)
             {
@@ -191,6 +195,10 @@ namespace CCDRS.Pages
                       endTime, SelectedStationId,
                     individualCategorySelect, individualCategoriesList));
                 }
+
+                // log the information to the data and system.
+                Utility.WriteToUserActivityLog(_context, username, 3,1, regionName.Name, surveyYear.Year);
+
                 return Content(builder.ToString());
             }
             else
@@ -214,7 +222,12 @@ namespace CCDRS.Pages
                     builder.Append(GetFifteenMinuteInterval(startTime,
                         endTime, SelectedStationId,
                      individualCategorySelect, individualCategoriesList));
-                } 
+                }
+
+
+                // log the information to the data and system.
+                Utility.WriteToUserActivityLog(_context, username, 3, 2, regionName.Name, surveyYear.Year);
+
                 return Content(builder.ToString());
             }
         }

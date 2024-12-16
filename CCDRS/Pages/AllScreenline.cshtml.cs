@@ -141,6 +141,10 @@ namespace CCDRS.Pages
 
             var builder = new StringBuilder();
 
+
+            // Access session data
+            string username = Utility.GetUserName(HttpContext);
+
             // User selects total volume.
             if (trafficVolumeRadioButtonSelect == 1)
             {
@@ -155,6 +159,10 @@ namespace CCDRS.Pages
                     startTime, endTime,
                  individualCategorySelect, individualCategoriesList
                  ));
+
+                // log the information to the data and system.
+                Utility.WriteToUserActivityLog(_context, username, 2, 1, regionName.Name, surveyYear.Year);
+
                 return Content(builder.ToString());
             }
             else
@@ -170,6 +178,10 @@ namespace CCDRS.Pages
                     startTime,endTime, 
                  individualCategorySelect, individualCategoriesList
                  ));
+
+                // log the information to the data and system.
+                Utility.WriteToUserActivityLog(_context, username, 2, 2, regionName.Name, surveyYear.Year);
+
                 return Content(builder.ToString());
             }
         }

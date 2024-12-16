@@ -47,6 +47,10 @@ namespace CCDRS.Pages
         /// <returns></returns>
         public async Task OnGet()
         {
+            // configure session 
+            Utility.SetUserName(HttpContext);
+            //HttpContext.Session.SetString("Username", User.Identity.Name);
+
             // run the database query to output a list all regions
             if (_context.Regions is not null)
             {
@@ -78,6 +82,7 @@ namespace CCDRS.Pages
                 .OrderBy(s => s.Year).ToList();
             return new JsonResult(DataList);
         }
+
 
         // redirect to the AllStation page
         public ActionResult OnPostAllStation()
