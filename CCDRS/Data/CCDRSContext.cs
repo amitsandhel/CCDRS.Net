@@ -86,6 +86,11 @@ public partial class CCDRSContext : DbContext
     /// </summary>
     public virtual DbSet<ScreenlineStation> ScreenlineStations { get; set; }
 
+    /// <summary>
+    /// Allow pages to access the logs as a service. 
+    /// </summary>
+    public virtual DbSet<UserActivityLog> UserActivityLogs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // Association of Direction class to direction database attributes
@@ -277,6 +282,12 @@ public partial class CCDRSContext : DbContext
                 .WithMany()
                 .HasForeignKey(d => d.StationId)
                 .HasConstraintName("screenline_station_station_id_fkey");
+        });
+
+        // Association of useractivityclass to the database
+        modelBuilder.Entity<UserActivityLog>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("useractivitylog_pkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -54,6 +54,12 @@ builder.Services.AddRazorPages(options =>
     }
 );
 
+// configure sessions
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+});
+
 var app = builder.Build();
 
 // Create and acquire the CCDRSContext service on project startup
@@ -78,6 +84,9 @@ app.UseRouting();
 // Activate the login authentication system
 app.UseAuthentication();
 app.UseAuthorization();
+
+//enable session
+app.UseSession();
 
 app.MapRazorPages();
 app.MapDefaultControllerRoute();

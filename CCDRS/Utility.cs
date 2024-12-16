@@ -162,4 +162,68 @@ public static class Utility
 
         return count;
     }
+
+    /// <summary>
+    /// Query to add the executed query to the database for logging purposes.
+    /// </summary>
+    /// <param name="context">DbContext Instance.</param>
+    /// <param name="username">user email address.</param>
+    /// <param name="pageType">Integer of user selected page e.g. AllStations, etc...</param>
+    /// <param name="calculationType">Type of calculation user selected e.g. Total volume or fifteen minute.</param>
+    /// <param name="region">User selected region of CCDRS survey.</param>
+    /// <param name="year">User selected year of CCDRS Survey.</param>
+    public static void WriteToUserActivityLog(CCDRS.Data.CCDRSContext context, string username, int pageType, 
+        int calculationType, string region, int year)
+    {
+        string page;
+        string calculationTimePeriod;
+
+        // switch to determine which page user queried.
+        switch (pageType)
+        {
+            case 1:
+                page =  "AllStations";
+                break;
+            case 2:
+                page = "AllScreenlines";
+                break;
+            case 3:
+                page = "SpecificStation";
+                break;
+            case 4:
+                page = "SpecificScreenline";
+                break;
+            default:
+                page = "Index";
+                break;
+        }
+
+        // switch to determine which calculation
+        switch(calculationType)
+        {
+            case 1:
+                calculationTimePeriod = "TotalVolume";
+                break;
+            case 2:
+                calculationTimePeriod = "FifteenMinuteInterval";
+                break;
+            default:
+                calculationTimePeriod = "";
+                break;
+        }
+
+        UserActivityLog userActivityLog = new()
+        {
+            UserName = username,
+            Logindaytime = DateTime.Now,
+            PageType = page,
+            CalculationTimePeriod = calculationTimePeriod,
+            Region = region,
+            Year = year
+        };
+        context.UserActivityLogs.Add(userActivityLog);
+        context.SaveChanges();
+        context.ChangeTracker.Clear();
+    }
+
 }

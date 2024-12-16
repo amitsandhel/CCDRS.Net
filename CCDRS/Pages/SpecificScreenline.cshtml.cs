@@ -81,6 +81,9 @@ public class SpecificScreenlineModel : PageModel
     /// <returns>The html page with the populated data</returns>
     public void OnGet()
     {
+        // configure session 
+        HttpContext.Session.SetString("Username", User.Identity.Name);
+
         // Query region table to display the region name to the front end.
         var regionName = _context.Regions
                           .Where(r => r.Id == RegionId)
@@ -160,6 +163,10 @@ public class SpecificScreenlineModel : PageModel
 
 
         var builder = new StringBuilder();
+
+        // Access session data
+        string username = HttpContext.Session.GetString("Username");
+
         // Check to see if user wants to calculate total volume or 15 minute intervals
         if (trafficVolumeRadioButtonSelect == 1)
         {
@@ -182,6 +189,11 @@ public class SpecificScreenlineModel : PageModel
                 endTime, SelectedScreenlineId,
                 individualCategorySelect, IndividualCategoriesList));
             }
+
+            // log the information to the data and system.
+            Utility.WriteToUserActivityLog(_context, username, 4, 1 , regionName.Name, surveyYear.Year);
+
+
             return Content(builder.ToString());
         }
         else
@@ -206,7 +218,10 @@ public class SpecificScreenlineModel : PageModel
                 endTime, SelectedScreenlineId,
                 individualCategorySelect, IndividualCategoriesList));
             }
-                
+
+            // log the information to the data and system.
+            Utility.WriteToUserActivityLog(_context, username, 4, 2, regionName.Name, surveyYear.Year);
+
             return Content(builder.ToString());
         }
     }
