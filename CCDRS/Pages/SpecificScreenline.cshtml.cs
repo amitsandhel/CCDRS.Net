@@ -160,6 +160,10 @@ public class SpecificScreenlineModel : PageModel
 
 
         var builder = new StringBuilder();
+
+        // Access session data
+        string username = Utility.GetUserName(HttpContext);
+
         // Check to see if user wants to calculate total volume or 15 minute intervals
         if (trafficVolumeRadioButtonSelect == 1)
         {
@@ -182,6 +186,11 @@ public class SpecificScreenlineModel : PageModel
                 endTime, SelectedScreenlineId,
                 individualCategorySelect, IndividualCategoriesList));
             }
+
+            // log the information to the data and system.
+            Utility.WriteToUserActivityLog(_context, username, 4, 1 , regionName.Name, surveyYear.Year);
+
+
             return Content(builder.ToString());
         }
         else
@@ -206,7 +215,10 @@ public class SpecificScreenlineModel : PageModel
                 endTime, SelectedScreenlineId,
                 individualCategorySelect, IndividualCategoriesList));
             }
-                
+
+            // log the information to the data and system.
+            Utility.WriteToUserActivityLog(_context, username, 4, 2, regionName.Name, surveyYear.Year);
+
             return Content(builder.ToString());
         }
     }

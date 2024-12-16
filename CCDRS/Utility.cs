@@ -14,9 +14,11 @@
 */
 
 using CCDRS.Model;
-using Microsoft.EntityFrameworkCore;
 
 namespace CCDRS;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+
 
 /// <summary>
 /// Contains cached data. Call Initialize before usage.
@@ -161,5 +163,68 @@ public static class Utility
                      ).Distinct().Count();
 
         return count;
+    }
+
+    /// <summary>
+    /// Query to add the executed query to the database for logging purposes.
+    /// </summary>
+    /// <param name="context">DbContext Instance.</param>
+    /// <param name="username">user email address.</param>
+    /// <param name="pageType">Integer of user selected page e.g. AllStations, etc...</param>
+    /// <param name="calculationType">Type of calculation user selected e.g. Total volume or fifteen minute.</param>
+    /// <param name="region">User selected region of CCDRS survey.</param>
+    /// <param name="year">User selected year of CCDRS Survey.</param>
+    public static void WriteToUserActivityLog(CCDRS.Data.CCDRSContext context, string username, int pageType,
+        int calculationType, string region, int year)
+    {
+        // switch to determine pagetype.
+        var page = pageType switch {
+            1 => "AllStations",
+            2 => "AllScreenlines",
+            3 => "SpecificStation",
+            4 => "SpecificScreenline",
+            _ => "Index"
+        };
+
+        // switch to determine which calculation
+        var calculationTimePeriod = calculationType switch
+        {
+            1 => "TotalVolume",
+            2 => "FifteenMinuteInterval",
+            _ => ""
+        };
+
+        UserActivityLog userActivityLog = new()
+        {
+            UserName = username,
+            Logindaytime = DateTime.Now,
+            PageType = page,
+            CalculationTimePeriod = calculationTimePeriod,
+            Region = region,
+            Year = year
+        };
+        context.UserActivityLogs.Add(userActivityLog);
+        context.SaveChanges();
+        context.ChangeTracker.Clear();
+    }
+
+    public static void SetUserName(HttpContext httpContext)
+    {
+        if (httpContext.User.Identity.IsAuthenticated == true)
+        {
+            string username = httpContext.User.Identity.Name;
+            httpContext.Session.SetString("Username", username);
+        }
+    }
+
+    /// <summary>
+    /// Method to get the username to pass for logging.
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <returns>a string of ther user email address.</returns>
+    public static string GetUserName(HttpContext httpContext)
+    {
+        // Access session data
+        return httpContext.Session.GetString("Username");
     }
 }

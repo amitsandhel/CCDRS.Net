@@ -17,7 +17,6 @@ using CCDRS.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Text;
 
 namespace CCDRS.Pages
@@ -130,6 +129,8 @@ namespace CCDRS.Pages
             int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
             )
         {
+            var username = Utility.GetUserName(HttpContext);
+
             // run the query to get a region name and survey year to display in the content header file
             // Query region table to display the region name to the front end.
             var regionName = _context.Regions
@@ -147,6 +148,7 @@ namespace CCDRS.Pages
             if (trafficVolumeRadioButtonSelect == 1)
             {
                 // Build the header of the content file
+                // Build the header of the content file
                 builder.Append(regionName?.Name ?? "Unknown Region");
                 builder.Append(' ');
                 builder.Append(surveyYear?.Year);
@@ -156,6 +158,10 @@ namespace CCDRS.Pages
                  individualCategorySelect, individualCategoriesList,
                  startTime, endTime
                  ));
+
+                // log the information to the data and system.
+                Utility.WriteToUserActivityLog(_context, username, 1, 1, regionName.Name, surveyYear.Year);
+
                 return Content(builder.ToString());
             }
             else
@@ -171,6 +177,10 @@ namespace CCDRS.Pages
                  individualCategorySelect, individualCategoriesList,
                  startTime, endTime
                  ));
+
+                // log the information to the data and system.
+                Utility.WriteToUserActivityLog(_context, username, 1, 2, regionName.Name, surveyYear.Year);
+
                 return Content(builder.ToString());
             }
         }
@@ -357,7 +367,6 @@ namespace CCDRS.Pages
                 }
                 builder.AppendLine();
             }
-
             return builder.ToString();
         }
     }
