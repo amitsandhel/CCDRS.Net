@@ -76,9 +76,6 @@ namespace CCDRS.Pages
         /// <returns>The html page with the populated data</returns>
         public void OnGet()
         {
-            // configure session 
-            HttpContext.Session.SetString("Username", User.Identity.Name);
-
             // Query region table to display the region name to the front end.
             var regionName = _context.Regions
                               .Where(r => r.Id == RegionId)
@@ -146,7 +143,7 @@ namespace CCDRS.Pages
 
 
             // Access session data
-            string username = HttpContext.Session.GetString("Username");
+            string username = Utility.GetUserName(HttpContext);
 
             // User selects total volume.
             if (trafficVolumeRadioButtonSelect == 1)

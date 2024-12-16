@@ -14,9 +14,10 @@
 */
 
 using CCDRS.Model;
-using Microsoft.EntityFrameworkCore;
 
 namespace CCDRS;
+using Microsoft.AspNetCore.Http;
+
 
 /// <summary>
 /// Contains cached data. Call Initialize before usage.
@@ -172,45 +173,25 @@ public static class Utility
     /// <param name="calculationType">Type of calculation user selected e.g. Total volume or fifteen minute.</param>
     /// <param name="region">User selected region of CCDRS survey.</param>
     /// <param name="year">User selected year of CCDRS Survey.</param>
-    public static void WriteToUserActivityLog(CCDRS.Data.CCDRSContext context, string username, int pageType, 
+    public static void WriteToUserActivityLog(CCDRS.Data.CCDRSContext context, string username, int pageType,
         int calculationType, string region, int year)
     {
-        string page;
-        string calculationTimePeriod;
-
-        // switch to determine which page user queried.
-        switch (pageType)
-        {
-            case 1:
-                page =  "AllStations";
-                break;
-            case 2:
-                page = "AllScreenlines";
-                break;
-            case 3:
-                page = "SpecificStation";
-                break;
-            case 4:
-                page = "SpecificScreenline";
-                break;
-            default:
-                page = "Index";
-                break;
-        }
+        // switch to determine pagetype.
+        var page = pageType switch {
+            1 => "AllStations",
+            2 => "AllScreenlines",
+            3 => "SpecificStation",
+            4 => "SpecificScreenline",
+            _ => "Index"
+        };
 
         // switch to determine which calculation
-        switch(calculationType)
+        var calculationTimePeriod = calculationType switch
         {
-            case 1:
-                calculationTimePeriod = "TotalVolume";
-                break;
-            case 2:
-                calculationTimePeriod = "FifteenMinuteInterval";
-                break;
-            default:
-                calculationTimePeriod = "";
-                break;
-        }
+            1 => "TotalVolume",
+            2 => "FifteenMinuteInterval",
+            _ => ""
+        };
 
         UserActivityLog userActivityLog = new()
         {
@@ -226,4 +207,14 @@ public static class Utility
         context.ChangeTracker.Clear();
     }
 
+    /// <summary>
+    /// Method to get the username to pass for logging.
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <returns>a string of ther user email address.</returns>
+    public static string GetUserName(HttpContext httpContext)
+    {
+        // Access session data
+        return httpContext.Session.GetString("Username");
+    }
 }

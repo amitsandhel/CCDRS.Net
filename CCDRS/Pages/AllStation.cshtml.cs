@@ -17,7 +17,6 @@ using CCDRS.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using System.Text;
 
 namespace CCDRS.Pages
@@ -77,9 +76,6 @@ namespace CCDRS.Pages
         /// <returns>The html page with the populated data</returns>
         public void OnGet()
         {
-            // configure session 
-            HttpContext.Session.SetString("Username", User.Identity.Name);
-
             // Query region table to display the region name to the front end.
             var regionName = _context.Regions
                               .Where(r => r.Id == RegionId)
@@ -133,6 +129,8 @@ namespace CCDRS.Pages
             int[] individualCategorySelect, IList<IndividualCategory> individualCategoriesList
             )
         {
+            var username = Utility.GetUserName(HttpContext);
+
             // run the query to get a region name and survey year to display in the content header file
             // Query region table to display the region name to the front end.
             var regionName = _context.Regions
@@ -146,12 +144,10 @@ namespace CCDRS.Pages
 
             var builder = new StringBuilder();
 
-            // Access session data
-            string username = HttpContext.Session.GetString("Username");
-
             // User selects total volume.
             if (trafficVolumeRadioButtonSelect == 1)
             {
+                // Build the header of the content file
                 // Build the header of the content file
                 builder.Append(regionName?.Name ?? "Unknown Region");
                 builder.Append(' ');

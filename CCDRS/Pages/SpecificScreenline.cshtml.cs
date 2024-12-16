@@ -81,9 +81,6 @@ public class SpecificScreenlineModel : PageModel
     /// <returns>The html page with the populated data</returns>
     public void OnGet()
     {
-        // configure session 
-        HttpContext.Session.SetString("Username", User.Identity.Name);
-
         // Query region table to display the region name to the front end.
         var regionName = _context.Regions
                           .Where(r => r.Id == RegionId)
@@ -165,7 +162,7 @@ public class SpecificScreenlineModel : PageModel
         var builder = new StringBuilder();
 
         // Access session data
-        string username = HttpContext.Session.GetString("Username");
+        string username = Utility.GetUserName(HttpContext);
 
         // Check to see if user wants to calculate total volume or 15 minute intervals
         if (trafficVolumeRadioButtonSelect == 1)
