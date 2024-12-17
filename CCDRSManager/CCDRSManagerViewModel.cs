@@ -13,10 +13,8 @@
     along with CCDRS.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using CCDRSManager.Model;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Security.Cryptography.X509Certificates;
 
 namespace CCDRSManager;
 
@@ -701,5 +699,10 @@ public class CCDRSManagerViewModel : INotifyPropertyChanged
     public void SaveVehicleOrder()
     {
         _ccdrsRepository.SaveVehicleOrder(_sortVehicles);
+    }
+
+    public void DownloadActivityLog()
+    {
+        _ccdrsRepository.DownloadActivityLog();
     }
 }
