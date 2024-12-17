@@ -1,69 +1,78 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 
-namespace CCDRSManager
+namespace CCDRSManager;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        /// <summary>
-        /// Method which runs on button click to open the wizard as a dialog box.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RunWizard(object sender, RoutedEventArgs e)
+    /// <summary>
+    /// Method which runs on button click to open the wizard as a dialog box.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void RunWizard(object sender, RoutedEventArgs e)
+    {
+        // initialize the CCDRS Wizard Window object.
+        var win = new CCDRSWizard()
         {
-            // initialize the CCDRS Wizard Window object.
-            var win = new CCDRSWizard()
-            {
-                Owner = this,
-            };
-            // Open the window as a dialog box.
-            win.ShowDialog();
-        }
+            Owner = this,
+        };
+        // Open the window as a dialog box.
+        win.ShowDialog();
+    }
 
-        /// <summary>
-        /// Edit a VehicleCountType technology.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void EditVehicle(object sender, RoutedEventArgs e)
-        {
-            VehicleWindow win = new();
-            win.ShowDialog();
-        }
+    /// <summary>
+    /// Edit a VehicleCountType technology.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void EditVehicle(object sender, RoutedEventArgs e)
+    {
+        VehicleWindow win = new();
+        win.ShowDialog();
+    }
 
-        /// <summary>
-        /// Add Screenline data to the database.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AddScreenline(object sender, RoutedEventArgs e)
-        {
-            ScreenlineDialog dialog = new();
-            dialog.ShowDialog();
-        }
+    /// <summary>
+    /// Add Screenline data to the database.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void AddScreenline(object sender, RoutedEventArgs e)
+    {
+        ScreenlineDialog dialog = new();
+        dialog.ShowDialog();
+    }
 
-        private void DeleteSurvey(object sender, RoutedEventArgs e)
-        {
-            DeleteSurveyWindow window = new();
-            window.ShowDialog();
-        }
+    private void DeleteSurvey(object sender, RoutedEventArgs e)
+    {
+        DeleteSurveyWindow window = new();
+        window.ShowDialog();
+    }
 
-        private void SortIndividualCategories(object sender, RoutedEventArgs e)
+    private void SortIndividualCategories(object sender, RoutedEventArgs e)
+    {
+        SortVehicle dialog = new()
         {
-            SortVehicle dialog = new()
-            {
-                Owner = this
-            };
-            dialog.ShowDialog();
-        }
+            Owner = this
+        };
+        dialog.ShowDialog();
+    }
+
+    private void DownloadActivityLogs(object sender, RoutedEventArgs e)
+    {
+        DownloadLog dialog = new()
+        {
+            Owner = this
+        };
+        dialog.ShowDialog();
     }
 }

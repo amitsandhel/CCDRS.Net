@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace CCDRSManager;
 
@@ -820,6 +821,37 @@ public partial class CCDRSManagerModelRepository
 
         // Save the context to the database.
         Save();
+    }
+
+    /// <summary>
+    /// Method to download the user activity logs as a csv file. 
+    /// </summary>
+    public void DownloadActivityLog()
+    {
+        var ans = _context.UserActivityLogs.ToList();
+        string refError = string.Empty;
+
+        // get the downloads folder path dynamically
+        string downloadsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Desktop");
+        // Define the full path for the CSV file
+        string filePath = Path.Combine(downloadsFolder, "data.csv");
+
+        var content = new StringBuilder();
+
+        try
+        {
+            foreach (var item in ans)
+            {
+                content.AppendLine($"{item.Id},{item.UserName},{item.Logindaytime}, {item.PageType}, {item.Region}, {item.Year}");
+            }
+
+            // write all the data to the csv file.
+            File.WriteAllText(filePath, content.ToString(), Encoding.UTF8);
+        }
+        catch(Exception ex)
+        {
+            refError = "failed to download data";
+        }
     }
 
     /// <summary>

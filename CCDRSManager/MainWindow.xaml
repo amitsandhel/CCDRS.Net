@@ -44,6 +44,7 @@
                 <Button Height="100" Grid.Column="1" Grid.Row="2" Click="EditVehicle">Edit Vehicle</Button>
                 <Button Height="100" Grid.Column="2" Grid.Row="2" Click="AddScreenline">Upload Screenline</Button>
                 <Button Height="100" Grid.Column="1" Grid.Row="3" Click="SortIndividualCategories">Sort Individual Categories</Button>
+                <Button Height="100" Grid.Column="2" Grid.Row="3" Click="DownloadActivityLogs">Download User Activity</Button>
             </Grid>
         </StackPanel>
     </Grid>
