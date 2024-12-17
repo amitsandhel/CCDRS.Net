@@ -842,8 +842,7 @@ public partial class CCDRSManagerModelRepository
         {
             foreach (var item in ans)
             {
-                var text = $"{item.Id},{item.UserName},{item.Logindaytime}, {item.PageType}, {item.Region}, {item.Year}";
-                content.AppendLine(text);
+                content.AppendLine($"{item.Id},{item.UserName},{item.Logindaytime}, {item.PageType}, {item.Region}, {item.Year}");
             }
 
             // write all the data to the csv file.
